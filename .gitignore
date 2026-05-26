@@ -1,0 +1,113 @@
+# Dependencies
+frontend/node_modules/
+backend/node_modules/
+node_modules/
+
+# Environment variables
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+backend/.env
+backend/.env.local
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+frontend/build/
+frontend/dist/
+frontend/out/
+backend/build/
+backend/dist/
+backend/out/
+build/
+dist/
+out/
+
+# Runtime and cache files
+frontend/.next/
+frontend/.nuxt/
+frontend/.vite/
+frontend/.cache/
+backend/.cache/
+.next/
+.nuxt/
+.vite/
+.cache/
+
+# Package manager lock files (optional - uncomment if you want to ignore them)
+# frontend/package-lock.json
+# frontend/yarn.lock
+# frontend/pnpm-lock.yaml
+# backend/package-lock.json
+# backend/yarn.lock
+# backend/pnpm-lock.yaml
+
+# Log files
+frontend/*.log
+frontend/logs/
+backend/*.log
+backend/logs/
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Coverage reports
+frontend/coverage/
+backend/coverage/
+coverage/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificates and keys
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Backup files
+*.bak
+*.backup
