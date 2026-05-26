@@ -1,6 +1,9 @@
 import express from "express";
+import { apiReference } from "@scalar/express-api-reference";
+import { openApiSpecification } from "./docs/swageer.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
 
 const createApp = () => {
 
@@ -15,11 +18,20 @@ const createApp = () => {
         }
     ))
 
+    app.use("/docs",
+
+        apiReference({
+            content: openApiSpecification
+        })
+
+    )
+
+
     app.use(express.json())
-    app.use(express.urlencoded({extended: true}))
+    app.use(express.urlencoded({ extended: true }))
     app.use(express.static("public"))
     app.use(cookieParser())
-    
+
 
 
     // Routes
