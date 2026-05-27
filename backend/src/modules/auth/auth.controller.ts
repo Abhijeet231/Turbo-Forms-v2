@@ -227,11 +227,25 @@ export const login = async (req: Request, res: Response) => {
 // ─── REFRESH TOKEN ──────────────────────────────────────────────────────────────────// 
 export const refreshToken = async (req: Request, res: Response) => {
     try {
-        const token = req.cookies?.refreshToken
+        let token: string | undefined
+
+        // web support (cookie)
+        if (req.cookies?.refreshToken) {
+            token = req.cookies.refreshToken
+        }
+
+        // mobile suport
+        if (!token &&
+            req.headers.authorization && req.headers.authorization.startsWith("Bearer ")
+        ) {
+            token = req.headers.authorization.split(" ")[1]
+        }
+
+        // no token found
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: "No refresh token provided"
+                message: "Refresh token missing"
             })
         }
 
@@ -241,6 +255,38 @@ export const refreshToken = async (req: Request, res: Response) => {
             email: string
         }
 
+
+        // hashing incoming refresh token
+        const hashedToken = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex")
+
+
+        // finding user in db
+        const [user] = await db
+            .select()
+            .from(usersTable)
+            .where(eq(usersTable.id, payload.id))
+
+        // user not found
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User not found",
+            })
+        }
+
+
+        // comparing tokens
+        if (user.refreshToken !== hashedToken) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid refresh token"
+            })
+        }
+
+        // generating new access token
         const accessToken = generateAccessToken({ id: payload.id, email: payload.email })
 
         return res.status(200).json({
@@ -250,9 +296,97 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 
     } catch (error) {
+        console.error("Refresh token error:", error)
+
         return res.status(401).json({
             success: false,
             message: "Invalid or expired refresh token",
+        })
+    }
+}
+
+
+// ─── GET ME ──────────────────────────────────────────────────────────────────// 
+export const getMe = async (req: Request, res: Response) => {
+    try {
+
+        if (!req.user?.id) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            })
+        }
+
+        const [user] = await db
+            .select({
+                id: usersTable.id,
+                fullName: usersTable.fullName,
+                email: usersTable.email,
+                profileImageUrl: usersTable.profileImageUrl,
+                emailVerified: usersTable.emailVerified,
+                createdAt: usersTable.createdAt
+            })
+            .from(usersTable)
+            .where(eq(usersTable.id, req.user.id))
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: { user }
+        })
+
+    } catch (error) {
+        console.error("GetMe error:", error)
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        })
+    }
+}
+
+
+
+// ─── LOG OUT ──────────────────────────────────────────────────────────────────// 
+export const logout = async (req: Request, res: Response) => {
+    try {
+
+        // check authenticated user
+        if (!req.user?.id) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            })
+        }
+
+        // remove refresh token from DB
+        await db
+            .update(usersTable)
+            .set({
+                refreshToken: null,
+            })
+            .where(eq(usersTable.id, req.user.id))
+
+        // clear refresh token cookie
+        res.clearCookie("refreshToken", cookieOptions)
+
+        return res.status(200).json({
+            success: true,
+            message: "Logged out successfully",
+        })
+
+    } catch (error) {
+        console.error("Logout error:", error)
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
         })
     }
 }
