@@ -9,8 +9,9 @@ export const usersTable = pgTable("users", {
   emailVerified: boolean("email_verified").default(false).notNull(),
 
   // auth
-  salt: text("salt"),
   password: text("password"),
+
+  refreshToken: text("refresh_token"),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),

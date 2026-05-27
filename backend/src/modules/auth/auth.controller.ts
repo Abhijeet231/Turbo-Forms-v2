@@ -4,9 +4,10 @@ import bcrypt from "bcryptjs";
 import { db } from "../../db/index.js";
 import { eq } from "drizzle-orm";
 import { signupSchema, loginSchema } from "./auth.validation.js";
-import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.utils.js";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/jwt.utils.js";
 import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 import cookieOptions from "../../utils/cookieOptions.js";
+import crypto from "node:crypto";
 
 
 // ─── SIGNUP ──────────────────────────────────────────────────────────────────// 
@@ -51,13 +52,13 @@ export const signup = async (req: Request, res: Response) => {
 
         }
 
+
         // insert user
         const [newUser] = await db.insert(usersTable).values({
             fullName,
             email,
-            salt,
             password: hashedPassword,
-            profileImageUrl
+            profileImageUrl,
         }).returning({
             id: usersTable.id,
             fullName: usersTable.fullName,
@@ -85,6 +86,22 @@ export const signup = async (req: Request, res: Response) => {
 
         })
 
+        // hashing refresh toekn
+        const hashedRefreshToken = crypto
+            .createHash("sha256")
+            .update(refreshToken)
+            .digest("hex")
+
+        // how to compare it ? 
+        // get the token from the cookie > then hash it using the same process > then compare both - stored one in db and one that you got from cookies...
+
+
+        // saving hashed refresh token in DB
+        await db.update(usersTable)
+            .set({ refreshToken: hashedRefreshToken })
+            .where(eq(usersTable.id, newUser.id))
+
+
         // set refresh token as httpOnly cookie
         res.cookie("refreshToken", refreshToken, cookieOptions)
 
@@ -93,7 +110,8 @@ export const signup = async (req: Request, res: Response) => {
             message: "Account created successully",
             data: {
                 user: newUser,
-                accessToken
+                accessToken,
+                refreshToken
             },
         })
 
@@ -123,7 +141,16 @@ export const login = async (req: Request, res: Response) => {
         const { email, password } = parsed.data
 
         // find user 
-        const [user] = await db.select()
+        const [user] = await db.select(
+            {
+                id: usersTable.id,
+                fullName: usersTable.fullName,
+                email: usersTable.email,
+                password: usersTable.password,
+                profileImageUrl: usersTable.profileImageUrl,
+                createdAt: usersTable.createdAt,
+            }
+        )
             .from(usersTable)
             .where(eq(usersTable.email, email))
 
@@ -156,6 +183,18 @@ export const login = async (req: Request, res: Response) => {
 
         })
 
+        // hashing refresh toekn
+        const hashedRefreshToken = crypto
+            .createHash("sha256")
+            .update(refreshToken)
+            .digest("hex")
+
+        // saving refresh token in DB
+        await db.update(usersTable)
+            .set({ refreshToken: hashedRefreshToken })
+            .where(eq(usersTable.id, user.id))
+
+
         // set reffresh token in cookies
         res.cookie("refreshToken", refreshToken, cookieOptions)
 
@@ -170,7 +209,8 @@ export const login = async (req: Request, res: Response) => {
                     profileImageUrl: user.profileImageUrl,
                     createdAt: user.createdAt,
                 },
-                accessToken
+                accessToken,
+                refreshToken
             },
         })
 
@@ -179,6 +219,40 @@ export const login = async (req: Request, res: Response) => {
         return res.status(500).json({
             success: false,
             message: "Internal server error",
+        })
+    }
+}
+
+
+// ─── REFRESH TOKEN ──────────────────────────────────────────────────────────────────// 
+export const refreshToken = async (req: Request, res: Response) => {
+    try {
+        const token = req.cookies?.refreshToken
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "No refresh token provided"
+            })
+        }
+
+        // verify refresh token 
+        const payload = verifyRefreshToken(token) as {
+            id: string
+            email: string
+        }
+
+        const accessToken = generateAccessToken({ id: payload.id, email: payload.email })
+
+        return res.status(200).json({
+            success: true,
+            data: { accessToken }
+        })
+
+
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: "Invalid or expired refresh token",
         })
     }
 }
