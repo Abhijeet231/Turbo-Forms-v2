@@ -139,7 +139,7 @@ router.post("/refresh-token", refreshToken)
  *       200:
  *         description: Logged out successfully
  */
-router.post("/logout", logout)
+router.post("/logout",authenticate, logout)
 
 /**
  * @openapi
