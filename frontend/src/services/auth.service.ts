@@ -12,7 +12,7 @@ export const register = (credentials: RegisterCredentials) => {
     formData.append("password", credentials.password);
 
     if (credentials.profileImageUrl) {
-        formData.append("profileImageUrl", credentials.profileImageUrl)
+        formData.append("profileImage", credentials.profileImageUrl)
     }
 
 

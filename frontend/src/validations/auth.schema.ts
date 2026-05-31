@@ -27,9 +27,18 @@ export const registerSchema = z.object({
             "Password must contain at least one number"
         ),
 
-    profileImageUrl: z
-        .url("Please provide a valid image URL")
-        .optional(),
+    profileImage: z
+        .instanceof(FileList)
+        .optional()
+        .refine(
+            (files) => !files || files.length === 0 || files[0].size <= 5 * 1024 * 1024,
+            "Image must be under 5MB"
+        )
+        .refine(
+            (files) =>
+                !files || files.length === 0 || files[0].type.startsWith("image/"),
+            "File must be an image"
+        ),
 });
 
 
