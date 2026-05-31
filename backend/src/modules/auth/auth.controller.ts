@@ -323,7 +323,6 @@ export const getMe = async (req: Request, res: Response) => {
                 fullName: usersTable.fullName,
                 email: usersTable.email,
                 profileImageUrl: usersTable.profileImageUrl,
-                emailVerified: usersTable.emailVerified,
                 createdAt: usersTable.createdAt
             })
             .from(usersTable)
