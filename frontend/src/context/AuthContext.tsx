@@ -19,6 +19,7 @@ import type {
   AuthResponse,
 } from "../types/auth.types.ts";
 import { toast } from "react-toastify";
+import { setAccessToken } from "../services/api.ts";
 
 //================================================================================================================================================
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
@@ -51,30 +52,29 @@ const AuthContext = createContext<AuthContextType | null>(null);
 // =========================
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [status, setStatus] = useState<AuthStatus>("loading");
+  const [status, setStatus] = useState<AuthStatus>(() => {
+    return localStorage.getItem("isAuthenticated") === "true"
+      ? "authenticated"
+      : "unauthenticated";
+  });
 
   // =========================
   // CHECK AUTH
   // =========================
-  const checkAuth = useCallback(async () => {
+ const checkAuth = useCallback(async () => {
     try {
-      setStatus("loading");
-
       const res = await getMe();
-
-      console.log("Response for getme:", res);
-
       setUser(res.data.data.user);
-
       setStatus("authenticated");
+      localStorage.setItem("isAuthenticated", "true");
+
     } catch (error) {
-      console.log("Auth check failed");
-
+      console.log("checkAuth failed:", error) // ← what error is it?
       setUser(null);
-
       setStatus("unauthenticated");
+      localStorage.removeItem("isAuthenticated");
     }
-  }, []);
+}, []);
 
   // =========================
   // INITIAL AUTH CHECK
@@ -90,10 +90,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     async (credentials: LoginCredentials): Promise<AuthResponse> => {
       try {
         const res = await loginService(credentials);
+        setAccessToken(res.data.data.accessToken)
 
         setUser(res.data.data.user);
 
         setStatus("authenticated");
+        localStorage.setItem("isAuthenticated", "true");
 
         toast.success("Login Successful");
 
@@ -118,6 +120,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(null);
 
       setStatus("unauthenticated");
+      localStorage.removeItem("isAuthenticated");
 
       toast.success("Logged out successfully");
     } catch (error) {
