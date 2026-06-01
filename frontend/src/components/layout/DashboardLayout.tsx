@@ -30,7 +30,7 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen bg-[#0a0a0a] overflow-hidden">
       {/* ── Sidebar ── */}
-      <aside className="w-[232px] min-w-[232px] bg-[#111111] border-r border-white/5 flex flex-col px-2.5 py-4 gap-4">
+      <aside className="w-58 min-w-58 bg-[#111111] border-r border-white/5 flex flex-col px-2.5 py-4 gap-4">
 
 
         {/* Branding */}
@@ -78,7 +78,7 @@ export default function DashboardLayout() {
               `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13.5px] font-medium transition-all duration-100 ${
                 isActive
                   ? "bg-orange-200/10 text-orange-500"
-                  : "text-white/40 hover:text-white/80 hover:bg-white/[0.04]"
+                  : "text-white/40 hover:text-white/80 hover:bg-white/4"
               }`
             }
           >
