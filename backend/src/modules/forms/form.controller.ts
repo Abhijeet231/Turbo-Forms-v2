@@ -191,7 +191,7 @@ export const publishForm = async (req: Request, res: Response) => {
     try {
         const { formId } = req.params as { formId: string };
         const userId = req.user!.id;
- 
+
         //  Validate body
         const parsed = publishFormSchema.safeParse(req.body);
         if (!parsed.success) {
@@ -200,9 +200,9 @@ export const publishForm = async (req: Request, res: Response) => {
                 message: "Validation failed",
             } satisfies ApiError);
         }
- 
+
         const { visibility } = parsed.data;
- 
+
         //  Verify form exists and user owns it
         const [form] = await db
             .select({
@@ -213,21 +213,21 @@ export const publishForm = async (req: Request, res: Response) => {
             .from(formsTable)
             .where(eq(formsTable.id, formId))
             .limit(1);
- 
+
         if (!form) {
             return res.status(404).json({
                 success: false,
                 message: "Form not found",
             } satisfies ApiError);
         }
- 
+
         if (form.createdBy !== userId) {
             return res.status(403).json({
                 success: false,
                 message: "You do not have access to this form",
             } satisfies ApiError);
         }
- 
+
         //  Already published - nothing to do
         if (form.isPublished) {
             return res.status(400).json({
@@ -235,20 +235,20 @@ export const publishForm = async (req: Request, res: Response) => {
                 message: "Form is already published",
             } satisfies ApiError);
         }
- 
+
         //  Must have at least 1 field
         const [fieldCount] = await db
             .select({ count: count() })
             .from(formFieldsTable)
             .where(eq(formFieldsTable.formId, formId));
- 
+
         if (!fieldCount || fieldCount.count === 0) {
             return res.status(400).json({
                 success: false,
                 message: "Form must have at least one field before publishing",
             } satisfies ApiError);
         }
- 
+
         //  Publish
         const [published] = await db
             .update(formsTable)
@@ -258,20 +258,20 @@ export const publishForm = async (req: Request, res: Response) => {
             })
             .where(eq(formsTable.id, formId))
             .returning();
- 
+
         if (!published) {
             return res.status(500).json({
                 success: false,
                 message: "Failed to publish form",
             } satisfies ApiError);
         }
- 
+
         return res.status(200).json({
             success: true,
             message: "Form published successfully",
             data: published,
         } satisfies ApiSuccess<FormDetail>);
- 
+
     } catch (error) {
         console.error("[publishForm]", error);
         return res.status(500).json({
@@ -282,4 +282,67 @@ export const publishForm = async (req: Request, res: Response) => {
 };
 
 
- 
+// Unpublish form
+export const unpublishForm = async (req: Request, res: Response) => {
+    try {
+        const { formId } = req.params as { formId: string };
+        const userId = req.user!.id;
+
+        const [form] = await db
+            .select({
+                id: formsTable.id,
+                createdBy: formsTable.createdBy,
+                isPublished: formsTable.isPublished,
+            })
+            .from(formsTable)
+            .where(eq(formsTable.id, formId))
+            .limit(1);
+
+        if (!form) {
+            return res.status(404).json({
+                success: false,
+                message: "Form not found",
+            } satisfies ApiError);
+        }
+
+        if (form.createdBy !== userId) {
+            return res.status(403).json({
+                success: false,
+                message: "You do not have access to this form",
+            } satisfies ApiError);
+        }
+
+        if (!form.isPublished) {
+            return res.status(400).json({
+                success: false,
+                message: "Form is already unpublished",
+            } satisfies ApiError);
+        }
+
+        const [unpublished] = await db
+            .update(formsTable)
+            .set({ isPublished: false })
+            .where(eq(formsTable.id, formId))
+            .returning();
+
+        if (!unpublished) {
+            return res.status(500).json({
+                success: false,
+                message: "Failed to unpublish form",
+            } satisfies ApiError);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Form unpublished successfully",
+            data: unpublished,
+        } satisfies ApiSuccess<FormDetail>);
+
+    } catch (error) {
+        console.error("[unpublishForm]", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        } satisfies ApiError);
+    }
+};

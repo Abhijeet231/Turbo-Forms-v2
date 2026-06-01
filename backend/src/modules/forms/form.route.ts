@@ -1,6 +1,6 @@
 import {Router} from "express"
 import rateLimit from "express-rate-limit"
-import { createForm, getFormsByUser, getFormById } from "./form.controller.js"
+import { createForm, getFormsByUser, getFormById, unpublishForm, publishForm } from "./form.controller.js"
 import { authenticate, optionalAuthenticate } from "../../middlewares/auth.middleware.js"
 import fieldRouter from "../form-fields/form-field.route.js"
 
@@ -27,6 +27,13 @@ router.get("/", authenticate, getFormsByUser);
 
 // Get Form By ID
 router.get("/:formId",optionalAuthenticate, getFormById)
+
+// publish form
+router.patch("/:formId/publish", authenticate, publishForm);
+
+
+// unpublish form
+router.patch("/:formId/unpublish", authenticate, unpublishForm);
 
 
 // nested fileds under forms
