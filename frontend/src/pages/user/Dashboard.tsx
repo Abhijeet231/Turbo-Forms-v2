@@ -4,14 +4,14 @@ import { useAuth } from "../../context/AuthContext"
 
 
 const Dashboard = () => {
-const {user, status} = useAuth();
+const { status} = useAuth();
 
 if( status === "loading") return <DashboardSkeleton/>
 
   return (
     <div>
       <h2>Dashboard</h2>
-      <p>{user?.fullName}</p>
+      
     </div>
   )
 }

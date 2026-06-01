@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 
 
 const Navbar = () => {
-  const { isAuthenticated, status } = useAuth();
+  const { isAuthenticated, status, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[#2c2824]/80 backdrop-blur-xl">
@@ -38,12 +38,21 @@ const Navbar = () => {
           {status === "loading" ? (
             <div className="h-9 w-24 animate-pulse rounded-xl bg-neutral-800" />
           ) : isAuthenticated ? (
-            <Link
-              to="/profile"
+           <div className="flex gap-5"> 
+             <Link
+              to="/dashboard"
               className="rounded-xl bg-[#a89474] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#bca98a]"
             >
-              Profile
+              Dashboard
             </Link>
+
+            <button
+              onClick={logout}
+              className="rounded-xl bg-[#a89474] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#bca98a]"
+            >
+              Logout
+            </button>
+           </div>
           ) : (
             <>
               <Link
