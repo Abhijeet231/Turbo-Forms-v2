@@ -1,9 +1,10 @@
 import { formsTable } from "../../db/models/form.js";
 import { type Request, type Response } from "express";
 import { db } from "../../db/index.js";
-import { eq } from "drizzle-orm";
+import { eq, count, and } from "drizzle-orm";
 import type { FormSummary, FormDetail, ApiSuccess, ApiError } from "./form.types.js";
-import { createFormSchema } from "./form.validation.js";
+import { createFormSchema, publishFormSchema } from "./form.validation.js";
+import { formFieldsTable } from "../../db/models/form-field.js";
 
 // ─── Helper ───────────────────────────────────────────────
 
@@ -184,3 +185,101 @@ export const getFormById = async (req: Request, res: Response) => {
         } satisfies ApiError);
     }
 };
+
+// PUblish fomr 
+export const publishForm = async (req: Request, res: Response) => {
+    try {
+        const { formId } = req.params as { formId: string };
+        const userId = req.user!.id;
+ 
+        //  Validate body
+        const parsed = publishFormSchema.safeParse(req.body);
+        if (!parsed.success) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation failed",
+            } satisfies ApiError);
+        }
+ 
+        const { visibility } = parsed.data;
+ 
+        //  Verify form exists and user owns it
+        const [form] = await db
+            .select({
+                id: formsTable.id,
+                createdBy: formsTable.createdBy,
+                isPublished: formsTable.isPublished,
+            })
+            .from(formsTable)
+            .where(eq(formsTable.id, formId))
+            .limit(1);
+ 
+        if (!form) {
+            return res.status(404).json({
+                success: false,
+                message: "Form not found",
+            } satisfies ApiError);
+        }
+ 
+        if (form.createdBy !== userId) {
+            return res.status(403).json({
+                success: false,
+                message: "You do not have access to this form",
+            } satisfies ApiError);
+        }
+ 
+        //  Already published - nothing to do
+        if (form.isPublished) {
+            return res.status(400).json({
+                success: false,
+                message: "Form is already published",
+            } satisfies ApiError);
+        }
+ 
+        //  Must have at least 1 field
+        const [fieldCount] = await db
+            .select({ count: count() })
+            .from(formFieldsTable)
+            .where(eq(formFieldsTable.formId, formId));
+ 
+        if (!fieldCount || fieldCount.count === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Form must have at least one field before publishing",
+            } satisfies ApiError);
+        }
+ 
+        //  Publish
+        const [published] = await db
+            .update(formsTable)
+            .set({
+                isPublished: true,
+                visibility,
+            })
+            .where(eq(formsTable.id, formId))
+            .returning();
+ 
+        if (!published) {
+            return res.status(500).json({
+                success: false,
+                message: "Failed to publish form",
+            } satisfies ApiError);
+        }
+ 
+        return res.status(200).json({
+            success: true,
+            message: "Form published successfully",
+            data: published,
+        } satisfies ApiSuccess<FormDetail>);
+ 
+    } catch (error) {
+        console.error("[publishForm]", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        } satisfies ApiError);
+    }
+};
+
+
+ 

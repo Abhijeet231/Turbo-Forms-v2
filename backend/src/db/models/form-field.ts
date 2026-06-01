@@ -19,7 +19,7 @@ export const fieldTypeEnum = pgEnum("field_type", [
     "email",
     "number",
     "date",
-    "single_select",// radio buttons
+    "single_select", // radio buttons
     "multi_select", // checkboxes (pick many)
     "dropdown",     // <select>
     "rating",       // star rating 1–5
@@ -34,15 +34,15 @@ export interface FieldOption {
 
 // Stored in form_fields.validations JSON column
 export interface FieldValidation {
-    minLength?: number;
-    maxLength?: number;
-    min?: number;
-    max?: number;
-    pattern?: string;
-    minSelections?: number;
-    maxSelections?: number;
-    minRating?: number;
-    maxRating?: number;
+    minLength?: number | undefined;    // short_text , long_text
+    maxLength?: number | undefined;    // short_text, long_text
+    min?: number | undefined;          // number
+    max?: number | undefined;          // number
+    pattern?: string | undefined;      // regex- 
+    minSelections?: number | undefined;  //multi-select- must pick at least N
+    maxSelections?: number | undefined;  // multi-select - can pick at most N
+    minRating?: number | undefined;      // rating filed
+    maxRating?: number | undefined;      // rating fild
 }
 
 export const formFieldsTable = pgTable(
