@@ -1,5 +1,9 @@
+import { useState } from "react";
+import CreateFormModal from "../../components/form/CreateFormModal.tsx";
 
 export default function Dashboard() {
+  const [modalOpen, setModalOpen] = useState(false)
+
   const stats = [
     { label: "Total forms", value: "12", delta: "+3 this month", icon: "FileDescription" },
     { label: "Total submissions", value: "1,482", delta: "+218 this week", icon: "Send" },
@@ -37,7 +41,9 @@ export default function Dashboard() {
           <h1 className="text-2xl font-medium text-stone-100">Dashboard</h1>
           <p className="text-sm text-stone-500 mt-1">Welcome back, Aryan</p>
         </div>
-        <button className="flex items-center gap-2 bg-orange-700 hover:bg-orange-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+        <button 
+        onClick={() => setModalOpen(true)}
+        className="flex items-center gap-2 bg-orange-700 hover:bg-orange-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
           <span>+</span> New form
         </button>
       </div>
@@ -110,6 +116,9 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+
+  
     </div>
   );
 }
+
