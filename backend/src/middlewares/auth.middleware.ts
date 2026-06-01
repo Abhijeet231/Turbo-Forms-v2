@@ -61,3 +61,19 @@ export const authenticate = (
     })
   }
 }
+
+// Optional authenticate middleware
+export const optionalAuthenticate = (req: Request, res: Response, next: NextFunction) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return next();
+    
+    try {
+        const decoded = verifyAccessToken(token) as { id: string; email: string };
+        if (decoded?.id && decoded?.email) {
+            req.user = { id: decoded.id, email: decoded.email };
+        }
+    } catch {
+        // invalid token - ignore:)
+    }
+    next();
+};

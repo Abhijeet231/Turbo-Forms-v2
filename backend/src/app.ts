@@ -4,12 +4,14 @@ import { openApiSpecification } from "./docs/swageer.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRouter from "./modules/auth/auth.route.js"
+import formRouter from "./modules/forms/form.route.js"
 import { errorHandler } from "./middlewares/error.middleware.js";
 
 
 const createApp = () => {
 
     const app = express();
+    app.set("trust proxy", 1);
 
     // ── Core Middlewares ──────────────────────────────────────────────
 
@@ -25,6 +27,8 @@ const createApp = () => {
     app.use(cookieParser())
 
 
+
+
     // ── API Docs (Scalar) ─────────────────────────────────────────────
     app.use("/docs", apiReference({
         content: openApiSpecification,
@@ -34,6 +38,7 @@ const createApp = () => {
 
     // ── Routes ────────────────────────────────────────────────────────
     app.use("/api/auth", authRouter)
+    app.use("/api/forms", formRouter)
 
 
     // ── 404 Handler ───────────────────────────────────────────────────
