@@ -3,6 +3,8 @@ import CreateFormModal from "../../components/form/CreateFormModal.tsx";
 import { getFormsByUser } from "../../services/form.service.ts";
 import type { Form } from "../../types/form.types.ts";
 import { toast } from "sonner";
+import Loading from "../../components/general/Loading.tsx";
+
 
 export default function Dashboard() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -69,6 +71,9 @@ console.log("YOOO FROMS:", forms)
   ];
 
  
+  if(loading) {
+    return <Loading />
+  }
 
   return (
     <div
