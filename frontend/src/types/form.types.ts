@@ -45,7 +45,7 @@ export interface ApiError {
 
 // Specific response types
 export type CreateFormResponse = ApiSuccess<{ form: Form }>;
-export type GetFormsResponse = ApiSuccess<{ forms: Form[] }>;
+export type GetFormsResponse = ApiSuccess<Form[]>;
 export type GetFormByIdResponse = ApiSuccess<{ form: Form }>;
 export type PublishFormResponse = ApiSuccess<{ form: Form }>;
 export type UnpublishFormResponse = ApiSuccess<{ form: Form }>;
