@@ -4,12 +4,14 @@ import { getFormsByUser } from "../../services/form.service.ts";
 import type { Form } from "../../types/form.types.ts";
 import { toast } from "sonner";
 import Loading from "../../components/general/Loading.tsx";
+import { Link } from "react-router-dom";
 
 
 export default function Dashboard() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [forms, setForms] = useState<Form[]>([]);
   const [loading, setLoading] = useState(true);
+  
 
 
   // fetch all froms realted to current user
@@ -142,7 +144,8 @@ console.log("YOOO FROMS:", forms)
         </p>
         <div className="space-y-2">
           {forms.map((form) => (
-            <div
+           <Link to={`/forms/${form.id}`} className="block">
+              <div
               key={form?.title}
               className="flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer transition-colors backdrop-blur-sm"
               style={{
@@ -190,6 +193,7 @@ console.log("YOOO FROMS:", forms)
                 </span>
               </div>
             </div>
+           </Link>
           ))}
         </div>
       </div>
