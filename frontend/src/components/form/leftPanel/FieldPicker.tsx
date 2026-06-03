@@ -1,8 +1,11 @@
+import type { FieldType } from "../../../types/form-fields.types";
 
-const FieldPicker = () => {
-  return (
-    <div>FieldPicker</div>
-  )
+interface FieldPickerProps {
+  onAddField: (type: FieldType) => Promise<void>;
 }
 
-export default FieldPicker
+const FieldPicker = ({ onAddField }: FieldPickerProps) => {
+  return <div>FieldPicker</div>;
+};
+
+export default FieldPicker;

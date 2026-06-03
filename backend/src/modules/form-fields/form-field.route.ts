@@ -11,11 +11,6 @@ import { authenticate, optionalAuthenticate } from "../../middlewares/auth.middl
 
 const router = Router({ mergeParams: true }); // mergeParams: true → gives access to :formId from parent router
 
-// GET    /api/forms/:formId/fields            → public if form is published
-// POST   /api/forms/:formId/fields            → owner only
-// PATCH  /api/forms/:formId/fields/:fieldId   → owner only
-// DELETE /api/forms/:formId/fields/:fieldId   → owner only
-// PATCH  /api/forms/:formId/fields/:fieldId/reorder → owner only
 
 router.get("/", optionalAuthenticate, getFieldsByFormId);
 router.post("/", authenticate, createField);

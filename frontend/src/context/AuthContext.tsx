@@ -52,16 +52,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 // =========================
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [status, setStatus] = useState<AuthStatus>(() => {
-    return localStorage.getItem("isAuthenticated") === "true"
-      ? "authenticated"
-      : "unauthenticated";
-  });
+const [status, setStatus] = useState<AuthStatus>("loading");
 
   // =========================
   // CHECK AUTH
   // =========================
  const checkAuth = useCallback(async () => {
+  setStatus("loading");
     try {
       const res = await getMe();
       setUser(res.data.data.user);
