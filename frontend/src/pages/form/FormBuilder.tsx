@@ -55,7 +55,7 @@ const FormBuilder = () => {
       .finally(() => setFormLoading(false));
   }, [id, status]); // ← add status to deps
 
-  //  Fetch fields 
+  //  Fetch fields
   useEffect(() => {
     if (!id || status !== "authenticated") return; // ← gate here
     setFieldsLoading(true);
@@ -94,6 +94,11 @@ const FormBuilder = () => {
     },
     [id],
   );
+
+  // Reorder Form-fileds handler
+  const handleReorderFields = useCallback((reordered: FormField[]) => {
+    setFields(reordered);
+  }, []);
 
   // ── Delete field ───────────────────────────────────────────
   const handleDeleteField = useCallback(
@@ -167,6 +172,7 @@ const FormBuilder = () => {
           selectedFieldId={selectedFieldId}
           onSelectField={setSelectedFieldId}
           onDeleteField={handleDeleteField}
+          onReorderFields={handleReorderFields}
         />
       }
       rightPanel={
