@@ -128,7 +128,7 @@ const FormBuilder = () => {
       try {
         const res = await updateField(id, fieldId, payload);
         console.log("UPdateFiled Response:", res.data)
-        const updated = res.data.data.field;
+        const updated = res.data.data;
 
         if(!updated) {
           setSaveStatus("saved");

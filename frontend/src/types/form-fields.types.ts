@@ -89,6 +89,6 @@ export interface ApiError {
 // Specific response types
 export type GetFieldsResponse = ApiSuccess<FormField[]>;
 export type CreateFieldResponse = ApiSuccess<FormField>;
-export type UpdateFieldResponse = ApiSuccess<{ field: FormField }>;
+export type UpdateFieldResponse = ApiSuccess< FormField>;
 export type DeleteFieldResponse = ApiSuccess<null>;
 export type ReorderFieldResponse = ApiSuccess<{ field: FormField }>;
