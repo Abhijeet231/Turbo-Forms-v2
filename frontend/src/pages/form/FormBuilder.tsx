@@ -96,6 +96,8 @@ const FormBuilder = () => {
     [id],
   );
 
+  console.log("FIELDS:", fields)
+
   // Reorder Form-fileds handler
   const handleReorderFields = useCallback((reordered: FormField[]) => {
     setFields(reordered);
@@ -125,7 +127,13 @@ const FormBuilder = () => {
       setSaveStatus("saving");
       try {
         const res = await updateField(id, fieldId, payload);
+        console.log("UPdateFiled Response:", res.data)
         const updated = res.data.data.field;
+
+        if(!updated) {
+          setSaveStatus("saved");
+          return;
+        }
         setFields((prev) => prev.map((f) => (f.id === fieldId ? updated : f)));
         setSaveStatus("saved");
       } catch {
@@ -150,7 +158,7 @@ const FormBuilder = () => {
   }, [id, form]);
 
   // ── Selected field object ──────────────────────────────────
-  const selectedField = fields.find((f) => f.id === selectedFieldId) ?? null;
+  const selectedField = fields.find((f) => f?.id === selectedFieldId) ?? null;
 
   // ── Loading / error states ─────────────────────────────────
   if (status === "loading" || formLoading) return <BuilderSkeleton />;

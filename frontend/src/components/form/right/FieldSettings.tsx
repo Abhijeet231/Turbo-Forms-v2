@@ -235,6 +235,10 @@ const FieldSettings = ({ field, onUpdateField }: FieldSettingsProps) => {
 
   const handleSave = async () => {
     if (!field) return;
+
+    const fieldId = field.id;
+    const hasOptions = ["single_select", "multi_select", "dropdown"].includes(field.type)
+
     setSaving(true);
     const payload: UpdateFieldPayload = {
       label: label.trim() || undefined,
@@ -244,7 +248,7 @@ const FieldSettings = ({ field, onUpdateField }: FieldSettingsProps) => {
       ...(hasOptions && { options }),
       ...(Object.keys(validations).length > 0 && { validations }),
     };
-    await onUpdateField(field.id, payload);
+    await onUpdateField(fieldId, payload);
     setSaving(false);
     setDirty(false);
   };
