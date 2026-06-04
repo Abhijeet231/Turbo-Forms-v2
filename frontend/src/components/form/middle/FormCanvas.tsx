@@ -26,8 +26,10 @@ interface FormCanvasProps {
   selectedFieldId: string | null;
   onSelectField: Dispatch<SetStateAction<string | null>>;
   onDeleteField: (fieldId: string) => Promise<void>;
-  formId: string; // needed for reorder API call
-  onReorderFields: (fields: FormField[]) => void; // optimistic update back to parent
+  formId: string; 
+  onReorderFields: (fields: FormField[]) => void; 
+ 
+  
 }
 
 const FormCanvas = ({
@@ -38,6 +40,7 @@ const FormCanvas = ({
   onDeleteField,
   formId,
   onReorderFields,
+ 
 }: FormCanvasProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {

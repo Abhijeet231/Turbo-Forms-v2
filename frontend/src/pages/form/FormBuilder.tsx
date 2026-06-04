@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import BuilderLayout from "../../components/form/layyout/BuilderLayout";
 import FieldPicker from "../../components/form/leftPanel/FieldPicker";
 import FormCanvas from "../../components/form/middle/FormCanvas";
+import FieldSettings from "../../components/form/right/FieldSettings";
 
 import { getFormById } from "../../services/form.service";
 import {
@@ -178,7 +179,10 @@ const FormBuilder = () => {
       }
       rightPanel={
         // Right panel wired up in next step
-        <RightPanelPlaceholder selectedField={selectedField} />
+        <FieldSettings 
+         field={selectedField}
+         onUpdateField={handleUpdateField}
+        />
       }
     />
   );
@@ -228,21 +232,3 @@ const BuilderError = ({ message }: { message: string }) => (
   </div>
 );
 
-// ── Right panel placeholder ─────────────────────────────────────
-
-const RightPanelPlaceholder = ({
-  selectedField,
-}: {
-  selectedField: FormField | null;
-}) => (
-  <div className="p-4">
-    <p className="text-xs uppercase tracking-widest text-text-secondary font-medium mb-4">
-      {selectedField ? "Field Settings" : "Form Settings"}
-    </p>
-    <p className="text-text-secondary text-sm">
-      {selectedField
-        ? `Editing: ${selectedField.label}`
-        : "Click a field to edit its settings."}
-    </p>
-  </div>
-);
