@@ -167,6 +167,7 @@ const FormBuilder = () => {
       leftPanel={<FieldPicker onAddField={handleAddField} />}
       canvas={
         <FormCanvas
+          formId={id!}
           fields={fields}
           loading={fieldsLoading}
           selectedFieldId={selectedFieldId}

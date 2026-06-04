@@ -129,7 +129,9 @@ const FormCanvas = ({
               onDelete={onDeleteField}
             />
           ))}
+          
         </div>
+       
       </SortableContext>
     </DndContext>
   );

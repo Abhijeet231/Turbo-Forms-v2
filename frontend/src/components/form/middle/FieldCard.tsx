@@ -3,17 +3,20 @@ import { CSS } from "@dnd-kit/utilities";
 import DragHandle from "./DragHandle";
 import type { FormField } from "../../../types/form-fields.types";
 
-const FIELD_TYPE_META: Record<FormField["type"], { icon: string; label: string }> = {
-  short_text:    { icon: "ti-text-size",    label: "Short answer" },
-  long_text:     { icon: "ti-align-left",   label: "Long answer" },
-  email:         { icon: "ti-mail",         label: "Email address" },
-  number:        { icon: "ti-numbers",      label: "Number" },
-  date:          { icon: "ti-calendar",     label: "Date" },
-  single_select: { icon: "ti-circle-dot",   label: "Single choice" },
-  multi_select:  { icon: "ti-checkbox",     label: "Multiple choice" },
-  dropdown:      { icon: "ti-chevron-down", label: "Dropdown" },
-  boolean:       { icon: "ti-toggle-left",  label: "Yes / No" },
-  rating:        { icon: "ti-star",         label: "Rating" },
+const FIELD_TYPE_META: Record<
+  FormField["type"],
+  { icon: string; label: string }
+> = {
+  short_text: { icon: "ti-text-size", label: "Short answer" },
+  long_text: { icon: "ti-align-left", label: "Long answer" },
+  email: { icon: "ti-mail", label: "Email address" },
+  number: { icon: "ti-numbers", label: "Number" },
+  date: { icon: "ti-calendar", label: "Date" },
+  single_select: { icon: "ti-circle-dot", label: "Single choice" },
+  multi_select: { icon: "ti-checkbox", label: "Multiple choice" },
+  dropdown: { icon: "ti-chevron-down", label: "Dropdown" },
+  boolean: { icon: "ti-toggle-left", label: "Yes / No" },
+  rating: { icon: "ti-star", label: "Rating" },
 };
 
 interface FieldCardProps {
@@ -23,7 +26,12 @@ interface FieldCardProps {
   onDelete: (id: string) => Promise<void>;
 }
 
-const FieldCard = ({ field, isSelected, onSelect, onDelete }: FieldCardProps) => {
+const FieldCard = ({
+  field,
+  isSelected,
+  onSelect,
+  onDelete,
+}: FieldCardProps) => {
   const {
     attributes,
     listeners,
@@ -48,11 +56,12 @@ const FieldCard = ({ field, isSelected, onSelect, onDelete }: FieldCardProps) =>
       className={`
         group relative flex items-start gap-3 px-4 py-3.5 rounded-lg border
         cursor-pointer transition-all duration-150 bg-background
-        ${isDragging
-          ? "opacity-50 shadow-lg scale-[1.02] border-border-strong z-50"
-          : isSelected
-            ? "border-primary ring-2 ring-primary/20 shadow-sm"
-            : "border-border hover:border-border-strong hover:shadow-sm"
+        ${
+          isDragging
+            ? "opacity-50 shadow-lg scale-[1.02] border-border-strong z-50"
+            : isSelected
+              ? "border-primary ring-2 ring-primary/20 shadow-sm"
+              : "border-border hover:border-border-strong hover:shadow-sm"
         }
       `}
     >
@@ -65,9 +74,14 @@ const FieldCard = ({ field, isSelected, onSelect, onDelete }: FieldCardProps) =>
       </div>
 
       {/* Type icon */}
-      <div className="flex items-center justify-center w-7 h-7 rounded-md
-        bg-surface border border-border shrink-0 mt-0.5">
-        <i className={`ti ${meta.icon} text-sm text-text-secondary`} aria-hidden="true" />
+      <div
+        className="flex items-center justify-center w-7 h-7 rounded-md
+        bg-surface border border-border shrink-0 mt-0.5"
+      >
+        <i
+          className={`ti ${meta.icon} text-sm text-text-secondary`}
+          aria-hidden="true"
+        />
       </div>
 
       {/* Content */}
@@ -83,23 +97,17 @@ const FieldCard = ({ field, isSelected, onSelect, onDelete }: FieldCardProps) =>
         </p>
       </div>
 
-      {/* Delete button — only visible on hover/select */}
+      {/* Delete button */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(field.id);
-        }}
-        className={`
-          shrink-0 flex items-center justify-center w-6 h-6 rounded
-          text-text-tertiary hover:text-danger hover:bg-danger/10
-          transition-all duration-150 mt-0.5
-          opacity-0 group-hover:opacity-100
-          ${isSelected ? "opacity-100" : ""}
-        `}
-        aria-label={`Delete ${field.label}`}
-      >
-        <i className="ti ti-trash text-sm" aria-hidden="true" />
-      </button>
+  onClick={(e) => {
+    e.stopPropagation();
+    onDelete(field.id);
+  }}
+  className="shrink-0 flex items-center justify-center w-6 h-6 rounded hover:bg-red-500/10 transition-all duration-150 mt-0.5"
+  aria-label={`Delete ${field.label}`}
+>
+  <i className="ti ti-trash text-base text-zinc-400 hover:text-red-500" aria-hidden="true" />
+</button>
     </div>
   );
 };
