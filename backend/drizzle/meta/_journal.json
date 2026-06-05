@@ -15,6 +15,13 @@
       "when": 1780021427910,
       "tag": "0001_big_stingray",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780632645058,
+      "tag": "0002_useful_ricochet",
+      "breakpoints": true
     }
   ]
 }

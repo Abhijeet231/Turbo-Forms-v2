@@ -16,6 +16,8 @@ import type {
     ApiError,
 } from "./form-field.types.js";
 
+type FormField = typeof formFieldsTable.$inferSelect;
+
 // ─── Helpers ───────────────────────────────────────────────
 
 /**
@@ -367,7 +369,7 @@ export const reorderField = async (req: Request, res: Response) => {
                     eq(formFieldsTable.formId, formId)
                 )
             )
-            .returning({ id: formFieldsTable.id, displayOrder: formFieldsTable.displayOrder });
+            .returning();
 
         if (!updated) {
             return res.status(404).json({
@@ -379,14 +381,25 @@ export const reorderField = async (req: Request, res: Response) => {
         return res.status(200).json({
             success: true,
             message: "Field reordered successfully",
-            data: updated,
-        } satisfies ApiSuccess<{ id: string; displayOrder: string }>);
+            data: {field: updated},
+        } satisfies ApiSuccess<{field:FormField }>);
 
-    } catch (error) {
-        console.error("[reorderField]", error);
+    } catch(error:any) {
+        if(error instanceof Error && error.message.includes("generateKeyBetween")){
+            console.error("[reorderField] fractional-indexing error:", error.message, {
+                prevOrder: req.body.prevOrder,
+                nextOrder: req.body.nextOrder,
+            });
+            return res.status(422).json({
+                success: false,
+                message: `Invalid ordering values:${error.message}`,
+            } satisfies ApiError)
+        }
+
+        console.error("[reorderFiled]", error);
         return res.status(500).json({
             success: false,
             message: "Internal server error",
-        } satisfies ApiError);
+        }satisfies ApiError)
     }
 };

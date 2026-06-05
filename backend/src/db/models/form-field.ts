@@ -84,9 +84,6 @@ export const formFieldsTable = pgTable(
         // form renderer: "get all fields for form X, ordered"
         index("idx_form_fields_form_id").on(table.formId),
 
-        // no two fields can have the same order within a form
-        unique("uq_form_fields_order").on(table.formId, table.displayOrder),
-
         // no two fields can have the same labelKey within a form
         unique("uq_form_fields_label_key").on(table.formId, table.labelKey),
     ]

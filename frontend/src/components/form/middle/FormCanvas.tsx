@@ -67,14 +67,24 @@ const FormCanvas = ({
     const prevOrder = reordered[newIndex - 1]?.displayOrder ?? null;
     const nextOrder = reordered[newIndex + 1]?.displayOrder ?? null;
 
+      console.log("Reorder payload:", { 
+        fieldId: active.id, 
+        prevOrder, 
+        nextOrder,
+        reorderedDisplayOrders: reordered.map(f => ({ id: f.id, order: f.displayOrder }))
+    });
+
     try {
       const res = await reorderField(formId, String(active.id), { prevOrder, nextOrder });
+
+      console.log("Full Response:", res.data)
       // Patch the moved field's displayOrder with the server's response
       const updated = res.data.data.field;
       onReorderFields(
         reordered.map((f) => (f.id === updated.id ? updated : f)),
       );
-    } catch {
+    } catch (err) {
+      console.error("Reorder Failed:", err)
       // Rollback on failure
       onReorderFields(fields);
     }
