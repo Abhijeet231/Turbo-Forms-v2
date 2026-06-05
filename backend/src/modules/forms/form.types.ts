@@ -1,3 +1,4 @@
+import type { SelectFormField } from "../../db/models/form-field.js";
 import type { SelectForm } from "../../db/models/form.js";
 
 // ─── API Response Shapes ───────────────────────────────────
@@ -31,4 +32,8 @@ export interface ApiError {
     success: false;
     message: string;
     errors?: Record<string, string[]>;
+}
+
+export type FormWithFields = FormDetail & {
+    fields: SelectFormField[];
 }

@@ -1,10 +1,11 @@
 import { formsTable } from "../../db/models/form.js";
 import { type Request, type Response } from "express";
 import { db } from "../../db/index.js";
-import { eq, count, and } from "drizzle-orm";
+import { eq, count, and, sql } from "drizzle-orm";
 import type { FormSummary, FormDetail, ApiSuccess, ApiError } from "./form.types.js";
 import { createFormSchema, publishFormSchema } from "./form.validation.js";
 import { formFieldsTable } from "../../db/models/form-field.js";
+import type { FormWithFields } from "./form.types.js";
 
 // ─── Helper ───────────────────────────────────────────────
 
@@ -186,7 +187,7 @@ export const getFormById = async (req: Request, res: Response) => {
     }
 };
 
-// PUblish fomr 
+// PUblish fomr ------------------------------------------------------
 export const publishForm = async (req: Request, res: Response) => {
     try {
         const { formId } = req.params as { formId: string };
@@ -282,7 +283,7 @@ export const publishForm = async (req: Request, res: Response) => {
 };
 
 
-// Unpublish form
+// Unpublish form ----------------------------------------------------
 export const unpublishForm = async (req: Request, res: Response) => {
     try {
         const { formId } = req.params as { formId: string };
@@ -346,3 +347,111 @@ export const unpublishForm = async (req: Request, res: Response) => {
         } satisfies ApiError);
     }
 };
+
+
+// Preview Form (owner only, auth required, works even if unpublished)
+export const previewForm = async (req: Request, res: Response) => {
+    try {
+        const { formId } = req.params as { formId: string };
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            } satisfies ApiError);
+        }
+
+        // Verify form exists and user owns it
+        const [form] = await db
+            .select()
+            .from(formsTable)
+            .where(
+                and(
+                    eq(formsTable.id, formId),
+                    eq(formsTable.createdBy, userId)  // ownership check
+                )
+            )
+            .limit(1);
+
+        if (!form) {
+            return res.status(404).json({
+                success: false,
+                message: "Form not found",
+            } satisfies ApiError);
+        }
+
+        // Fetch fields separately (preview needs them to render the form)
+        const fields = await db
+            .select()
+            .from(formFieldsTable)
+            .where(eq(formFieldsTable.formId, formId))
+            .orderBy(formFieldsTable.displayOrder);  // adjust field name if yours differs
+
+        return res.status(200).json({
+            success: true,
+            message: "Form preview fetched successfully",
+            data: { ...form, fields, isPreview: true },
+        } satisfies ApiSuccess<FormWithFields & { isPreview: boolean }>);
+
+    } catch (error) {
+        console.error("[previewForm]", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        } satisfies ApiError);
+    }
+};
+
+
+// Public Form View (no auth required, only published forms)
+export const getPublicForm = async (req: Request, res: Response) => {
+    try {
+        const { slug } = req.params as { slug: string };
+
+        const [form] = await db
+            .select()
+            .from(formsTable)
+            .where(
+                and(
+                    eq(formsTable.slug, slug),
+                    eq(formsTable.isPublished, true)
+                )
+            )
+            .limit(1);
+
+        if (!form) {
+            return res.status(404).json({
+                success: false,
+                message: "Form not found or unavailable",
+            } satisfies ApiError);
+        }
+
+        // Fetch fields (public user needs them to fill the form)
+        const fields = await db
+            .select()
+            .from(formFieldsTable)
+            .where(eq(formFieldsTable.formId, form.id))
+            .orderBy(formFieldsTable.displayOrder);  // adjust field name if yours differs
+
+        // Increment viewCount — fire-and-forget, don't await
+        db.update(formsTable)
+            .set({ viewCount: sql`${formsTable.viewCount} + 1` })
+            .where(eq(formsTable.id, form.id))
+            .execute()
+            .catch((err) => console.error("[getPublicForm] viewCount update failed:", err));
+
+        return res.status(200).json({
+            success: true,
+            data: { ...form, fields, isPreview: false },
+        } satisfies ApiSuccess<FormWithFields & { isPreview: boolean }>);
+
+    } catch (error) {
+        console.error("[getPublicForm]", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        } satisfies ApiError);
+    }
+};
+
