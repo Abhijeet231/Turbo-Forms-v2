@@ -57,19 +57,20 @@ const [status, setStatus] = useState<AuthStatus>("loading");
   // =========================
   // CHECK AUTH
   // =========================
- const checkAuth = useCallback(async () => {
-  setStatus("loading");
+const checkAuth = useCallback(async () => {
+    setStatus("loading");
     try {
-      const res = await getMe();
-      setUser(res.data.data.user);
-      setStatus("authenticated");
-      localStorage.setItem("isAuthenticated", "true");
-
-    } catch (error) {
-      console.log("checkAuth failed:", error) // ← what error is it?
-      setUser(null);
-      setStatus("unauthenticated");
-      localStorage.removeItem("isAuthenticated");
+        const res = await getMe();
+        setUser(res.data.data.user);
+        setStatus("authenticated");
+        localStorage.setItem("isAuthenticated", "true");
+    } catch (error: any) {
+        console.log("checkAuth error status:", error?.response?.status);
+        console.log("checkAuth error url:", error?.config?.url);
+        console.log("checkAuth was retry?:", error?.config?._retry);
+        setUser(null);
+        setStatus("unauthenticated");
+        localStorage.removeItem("isAuthenticated");
     }
 }, []);
 
