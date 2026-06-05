@@ -143,7 +143,7 @@ const FormPreview = () => {
                     ))}
                 </div>
 
-                {/* Submit Button (disabled in preview) */}
+                {/* Submit Button */}
                 {form.fields.length > 0 && (
                     <div className="mt-8">
                         <button

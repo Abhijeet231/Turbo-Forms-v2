@@ -369,7 +369,7 @@ export const previewForm = async (req: Request, res: Response) => {
             .where(
                 and(
                     eq(formsTable.id, formId),
-                    eq(formsTable.createdBy, userId)  // ownership check
+                    eq(formsTable.createdBy, userId)  
                 )
             )
             .limit(1);
@@ -381,12 +381,12 @@ export const previewForm = async (req: Request, res: Response) => {
             } satisfies ApiError);
         }
 
-        // Fetch fields separately (preview needs them to render the form)
+        // Fetch fields separately to show then in the preview page..
         const fields = await db
             .select()
             .from(formFieldsTable)
             .where(eq(formFieldsTable.formId, formId))
-            .orderBy(formFieldsTable.displayOrder);  // adjust field name if yours differs
+            .orderBy(formFieldsTable.displayOrder);  
 
         return res.status(200).json({
             success: true,
@@ -427,14 +427,14 @@ export const getPublicForm = async (req: Request, res: Response) => {
             } satisfies ApiError);
         }
 
-        // Fetch fields (public user needs them to fill the form)
+        // Fetch fields 
         const fields = await db
             .select()
             .from(formFieldsTable)
             .where(eq(formFieldsTable.formId, form.id))
-            .orderBy(formFieldsTable.displayOrder);  // adjust field name if yours differs
+            .orderBy(formFieldsTable.displayOrder);  
 
-        // Increment viewCount — fire-and-forget, don't await
+        // Increment viewCount 
         db.update(formsTable)
             .set({ viewCount: sql`${formsTable.viewCount} + 1` })
             .where(eq(formsTable.id, form.id))
