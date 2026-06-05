@@ -7,6 +7,8 @@ import {
     type PublishFormPayload,
     type PublishFormResponse,
     type UnpublishFormResponse,
+    type PreviewFormResponse,
+    type GetPublicFormResponse
 } from "../types/form.types";
 
 // Create a new form
@@ -33,3 +35,14 @@ export const publishForm = (formId: string, payload: PublishFormPayload) => {
 export const unpublishForm = (formId: string) => {
     return api.patch<UnpublishFormResponse>(`/api/forms/${formId}/unpublish`);
 };
+
+// Preview form (authenticated, owner only)
+export const previewForm = (formId: string) => {
+    return api.get<PreviewFormResponse>(`/api/forms/${formId}/preview`);
+};
+
+// Get public form by slug (no auth needed)
+export const getPublicForm = (slug: string) => {
+    return api.get<GetPublicFormResponse>(`/api/forms/public/${slug}`);
+};
+

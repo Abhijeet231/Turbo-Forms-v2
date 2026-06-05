@@ -1,6 +1,6 @@
 import {Router} from "express"
 import rateLimit from "express-rate-limit"
-import { createForm, getFormsByUser, getFormById, unpublishForm, publishForm } from "./form.controller.js"
+import { createForm, getFormsByUser, getFormById, unpublishForm, publishForm, getPublicForm, previewForm} from "./form.controller.js"
 import { authenticate, optionalAuthenticate } from "../../middlewares/auth.middleware.js"
 import fieldRouter from "../form-fields/form-field.route.js"
 
@@ -25,8 +25,14 @@ router.post("/", authenticate, createFormLimiter, createForm);
 // Get Forms for a Specific User
 router.get("/", authenticate, getFormsByUser);
 
+// Get public form
+router.get("/public/:slug", getPublicForm)
+
 // Get Form By ID
 router.get("/:formId",optionalAuthenticate, getFormById)
+
+// Get Preview Form
+router.get("/:formId/preview", authenticate, previewForm)
 
 // publish form
 router.patch("/:formId/publish", authenticate, publishForm);
