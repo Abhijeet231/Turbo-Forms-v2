@@ -71,13 +71,26 @@ const FormBuilder = () => {
   }, [id, status]); // ← add status to deps
 
   // ── Add field ──────────────────────────────────────────────
-  const handleAddField = useCallback(
+  const OPTION_TYPES: FieldType[] = [
+    "single_select",
+    "multi_select",
+    "dropdown",
+  ];
+
+
+const handleAddField = useCallback(
     async (type: FieldType) => {
       if (!id) return;
       setSaveStatus("saving");
       const payload: CreateFieldPayload = {
         type,
         label: defaultLabelForType(type),
+        ...(OPTION_TYPES.includes(type) && {
+          options: [
+            { label: "Option 1", value: "option_1" },
+            { label: "Option 2", value: "option_2" },
+          ],
+        }),
       };
       try {
         const res = await createField(id, payload);
@@ -96,7 +109,7 @@ const FormBuilder = () => {
     [id],
   );
 
-  console.log("FIELDS:", fields)
+  console.log("FIELDS:", fields);
 
   // Reorder Form-fileds handler
   const handleReorderFields = useCallback((reordered: FormField[]) => {
@@ -127,10 +140,10 @@ const FormBuilder = () => {
       setSaveStatus("saving");
       try {
         const res = await updateField(id, fieldId, payload);
-        console.log("UPdateFiled Response:", res.data)
+        console.log("UPdateFiled Response:", res.data);
         const updated = res.data.data;
 
-        if(!updated) {
+        if (!updated) {
           setSaveStatus("saved");
           return;
         }
@@ -187,9 +200,9 @@ const FormBuilder = () => {
       }
       rightPanel={
         // Right panel wired up in next step
-        <FieldSettings 
-         field={selectedField}
-         onUpdateField={handleUpdateField}
+        <FieldSettings
+          field={selectedField}
+          onUpdateField={handleUpdateField}
         />
       }
     />
@@ -239,4 +252,3 @@ const BuilderError = ({ message }: { message: string }) => (
     </div>
   </div>
 );
-
