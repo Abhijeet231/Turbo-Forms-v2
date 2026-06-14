@@ -21,29 +21,40 @@ api.interceptors.request.use((config) => {
     return config
 })
 
+
 // response interceptor
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const original = error.config;
 
-        if (error.response?.status === 401 && !original._retry) {
+        // Don't retry or redirect for public routes
+        const publicRoutes = ["/api/forms/public/"];
+        const isPublicRoute = publicRoutes.some((route) =>
+            original.url?.includes(route)
+        );
+
+        if (error.response?.status === 401 && !original._retry && !isPublicRoute) {
             original._retry = true;
 
             try {
-                const res = await api.post("/api/auth/refresh-token")
-                const newToken = res.data.data.accessToken
+                const res = await api.post("/api/auth/refresh-token");
+                const newToken = res.data.data.accessToken;
 
-                setAccessToken(newToken) // ← store new token
-                original.headers.Authorization = `Bearer ${newToken}` // ← patch retry request
+                setAccessToken(newToken);
+                original.headers.Authorization = `Bearer ${newToken}`;
 
-                return api(original) // ← retry original request
+                return api(original);
 
             } catch (refreshError) {
-                setAccessToken(null)
-                localStorage.removeItem("isAuthenticated")
-                window.location.href = "/login"
-                return Promise.reject(refreshError)
+                // Only redirect to login if we're NOT on a public page
+                const isPublicPage = window.location.pathname.startsWith("/f/");
+                if (!isPublicPage) {
+                    setAccessToken(null);
+                    localStorage.removeItem("isAuthenticated");
+                    window.location.href = "/login";
+                }
+                return Promise.reject(refreshError);
             }
         }
 

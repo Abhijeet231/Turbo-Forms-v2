@@ -22,7 +22,7 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
 
   // -- Public form page (no auth, no layout)
-  {path: "f/:slug", element: <PublicForms/>},
+  {path: "/f/:slug", element: <PublicForms/>},
 
   // ── Public layout (App.tsx with navbar) ────────────────────
   {

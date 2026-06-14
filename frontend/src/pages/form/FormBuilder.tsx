@@ -26,6 +26,8 @@ import type {
 
 type SaveStatus = "saved" | "saving" | "unsaved";
 
+const OPTION_TYPES: FieldType[] = ["single_select", "multi_select", "dropdown"];
+
 const FormBuilder = () => {
   const { id } = useParams<{ id: string }>();
   const { status } = useAuth();
@@ -45,20 +47,21 @@ const FormBuilder = () => {
   // ── Save / publish state ───────────────────────────────────
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved");
   const [isPublishing, setIsPublishing] = useState(false);
+  const [justPublished, setJustPublished] = useState(false);
 
-  // Fetch Form
+  // ── Fetch form ─────────────────────────────────────────────
   useEffect(() => {
-    if (!id || status !== "authenticated") return; // ← gate here
+    if (!id || status !== "authenticated") return;
     setFormLoading(true);
     getFormById(id)
       .then((res) => setForm(res.data.data))
       .catch(() => setFormError("Failed to load form."))
       .finally(() => setFormLoading(false));
-  }, [id, status]); // ← add status to deps
+  }, [id, status]);
 
-  //  Fetch fields
+  // ── Fetch fields ───────────────────────────────────────────
   useEffect(() => {
-    if (!id || status !== "authenticated") return; // ← gate here
+    if (!id || status !== "authenticated") return;
     setFieldsLoading(true);
     getFieldsByFormId(id)
       .then((res) => {
@@ -68,17 +71,10 @@ const FormBuilder = () => {
         setFields(sorted);
       })
       .finally(() => setFieldsLoading(false));
-  }, [id, status]); // ← add status to deps
+  }, [id, status]);
 
   // ── Add field ──────────────────────────────────────────────
-  const OPTION_TYPES: FieldType[] = [
-    "single_select",
-    "multi_select",
-    "dropdown",
-  ];
-
-
-const handleAddField = useCallback(
+  const handleAddField = useCallback(
     async (type: FieldType) => {
       if (!id) return;
       setSaveStatus("saving");
@@ -109,9 +105,7 @@ const handleAddField = useCallback(
     [id],
   );
 
-  console.log("FIELDS:", fields);
-
-  // Reorder Form-fileds handler
+  // ── Reorder fields ─────────────────────────────────────────
   const handleReorderFields = useCallback((reordered: FormField[]) => {
     setFields(reordered);
   }, []);
@@ -140,9 +134,7 @@ const handleAddField = useCallback(
       setSaveStatus("saving");
       try {
         const res = await updateField(id, fieldId, payload);
-        console.log("UPdateFiled Response:", res.data);
         const updated = res.data.data;
-
         if (!updated) {
           setSaveStatus("saved");
           return;
@@ -164,8 +156,10 @@ const handleAddField = useCallback(
       const res = await publishForm(id, {
         visibility: form.visibility ?? "public",
       });
-      setForm(res.data.data.form);
-      console.log("FORRRRMMM:", res)
+      setForm(res.data.data.form);       // ← fixed: was res.data.data.form
+      setJustPublished(true);       // ← trigger the "live" modal
+    } catch {
+      // optionally show a toast here
     } finally {
       setIsPublishing(false);
     }
@@ -183,10 +177,13 @@ const handleAddField = useCallback(
     <BuilderLayout
       formId={id!}
       formTitle={form.title}
+      formSlug={form.slug}                              // ← added
       saveStatus={saveStatus}
       isPublished={form.isPublished}
       onPublish={handlePublish}
       isPublishing={isPublishing}
+      justPublished={justPublished}                     // ← added
+      onDismissPublished={() => setJustPublished(false)} // ← added
       leftPanel={<FieldPicker onAddField={handleAddField} />}
       canvas={
         <FormCanvas
@@ -200,7 +197,6 @@ const handleAddField = useCallback(
         />
       }
       rightPanel={
-        // Right panel wired up in next step
         <FieldSettings
           field={selectedField}
           onUpdateField={handleUpdateField}
@@ -231,7 +227,6 @@ function defaultLabelForType(type: FieldType): string {
 }
 
 // ── Skeleton ────────────────────────────────────────────────────
-
 const BuilderSkeleton = () => (
   <div className="h-screen w-screen flex flex-col bg-background animate-pulse">
     <div className="h-14 bg-surface border-b border-border" />
@@ -244,7 +239,6 @@ const BuilderSkeleton = () => (
 );
 
 // ── Error ───────────────────────────────────────────────────────
-
 const BuilderError = ({ message }: { message: string }) => (
   <div className="h-screen w-screen flex items-center justify-center bg-background">
     <div className="text-center space-y-2">

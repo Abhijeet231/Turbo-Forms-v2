@@ -6,10 +6,13 @@ interface BuilderLayoutProps {
   // Navbar props
   formId: string;
   formTitle: string;
+  formSlug: string;
   saveStatus: SaveStatus;
   isPublished: boolean;
   onPublish: () => void;
   isPublishing: boolean;
+  justPublished: boolean;
+  onDismissPublished: () => void;
 
   // Panel slots
   leftPanel: React.ReactNode;
@@ -20,10 +23,13 @@ interface BuilderLayoutProps {
 const BuilderLayout = ({
   formId,
   formTitle,
+  formSlug,
   saveStatus,
   isPublished,
   onPublish,
   isPublishing,
+  justPublished,
+  onDismissPublished,
   leftPanel,
   canvas,
   rightPanel,
@@ -34,10 +40,13 @@ const BuilderLayout = ({
       <BuilderNavbar
         formId={formId}
         formTitle={formTitle}
+        formSlug={formSlug}
         saveStatus={saveStatus}
         isPublished={isPublished}
         onPublish={onPublish}
         isPublishing={isPublishing}
+        justPublished={justPublished}
+        onDismissPublished={onDismissPublished}
       />
 
       {/* 3-panel body */}
