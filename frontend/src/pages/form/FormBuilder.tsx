@@ -165,6 +165,7 @@ const handleAddField = useCallback(
         visibility: form.visibility ?? "public",
       });
       setForm(res.data.data.form);
+      console.log("FORRRRMMM:", res)
     } finally {
       setIsPublishing(false);
     }
