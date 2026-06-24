@@ -1,1 +1,0 @@
-ALTER TABLE "form_fields" DROP CONSTRAINT "uq_form_fields_order";
