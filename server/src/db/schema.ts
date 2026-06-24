@@ -1,0 +1,1 @@
+export * as usersTable from "./models/user.model.js"
