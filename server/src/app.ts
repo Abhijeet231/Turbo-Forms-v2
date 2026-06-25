@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import { env } from "./config/env.js";
 import { clerkMiddleware } from "@clerk/express"
+import userRoutes from "./modules/user/user.routes.js"
 
 const createApp = () => {
 
@@ -27,6 +28,8 @@ const createApp = () => {
             message: "hi i am healthy"
         })
     })
+
+    app.use("/api/v1/user", userRoutes)
 
     return app;
 
