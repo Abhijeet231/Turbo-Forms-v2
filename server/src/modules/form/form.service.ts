@@ -1,8 +1,9 @@
 import { formsTable } from "../../db/schema.js";
 import { usersTable } from "../../db/schema.js";
 import { db } from "../../db/index.js";
-import { eq, count, and } from "drizzle-orm";
+import { eq, count, and, desc } from "drizzle-orm";
 import { type CreateFormInput, type UpdateFormInput } from "./form.validation.js"
+import { getDbUserByClerkId } from "../user/user.service.js"
 
 
 // Generate Slug
@@ -52,19 +53,17 @@ export const updateFormService = async (userId: string, formId: string, data: Up
 
 
     // find the user in teh db
-    const user = await db.select()
-        .from(usersTable)
-        .where(eq(usersTable.clerk_id, userId))
-        .limit(1)
-
-    if (!user[0]) throw new Error("User not foun")
+    const user = await getDbUserByClerkId(userId)
+    if (!user) {
+        throw new Error("user not found")
+    }
 
     // check ownership
     const existingForm = await db.select()
         .from(formsTable)
         .where(and(
             eq(formsTable.id, formId),
-            eq(formsTable.user_id, user[0].id)
+            eq(formsTable.user_id, user.id)
         ))
         .limit(1)
 
@@ -81,5 +80,49 @@ export const updateFormService = async (userId: string, formId: string, data: Up
 
     return result[0] ?? null;
 
+
+}
+
+// Get all froms for logged In creator
+export const getAllFormsService = async (userId: string) => {
+
+    // get the user from the DB using clerkId
+    const user = await getDbUserByClerkId(userId);
+
+    if (!user) {
+        throw new Error("user not found")
+    }
+
+
+    // fetch all forms where form.userId = user.id
+    const allForms = await db.select()
+        .from(formsTable)
+        .where(eq(formsTable.user_id, user.id))
+        .orderBy(desc(formsTable.created_at))
+
+    // return back
+
+    return {
+        forms: allForms,
+        count: allForms.length
+    }
+
+}
+
+// Get single form by formId
+export const getFormByIdForCreatorService = async (userId: string, formId: string) => {
+    const user = await getDbUserByClerkId(userId);
+
+    const result = await db.select()
+        .from(formsTable)
+        .where(and(
+            eq(formsTable.id, formId),
+            eq(formsTable.user_id, user.id)
+        ))
+        .limit(1)
+
+    if (!result[0]) throw new Error("Form not found or unauthorized")
+
+    return result[0]
 
 }

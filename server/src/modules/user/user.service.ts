@@ -22,3 +22,16 @@ export const createUser = async (data: InsertUser) => {
 
     return result[0] ?? null;
 }
+
+
+// get user by clerkId ( export and use in other moduels)
+export const getDbUserByClerkId = async (clerkId: string) => {
+    const result = await db.select()
+        .from(usersTable)
+        .where(eq(usersTable.clerk_id, clerkId))
+        .limit(1)
+
+    if (!result[0]) throw new Error("User not found")
+
+    return result[0]
+}
