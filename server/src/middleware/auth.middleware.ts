@@ -15,12 +15,3 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
     next();
 }
-
-//  controllers/user.controller.ts
-
-// export const getMe = async (req: Request, res: Response) => {
-//   const userId = res.locals.userId; // 📦 pick it out of the bag
-  
-//   const user = await userService.getUserByClerkId(userId);
-//   res.json(user);
-// };
