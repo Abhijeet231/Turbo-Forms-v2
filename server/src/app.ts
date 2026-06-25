@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import { env } from "./config/env.js";
+import { clerkMiddleware } from "@clerk/express"
 
 const createApp = () => {
 
@@ -16,6 +17,7 @@ const createApp = () => {
 
     ))
 
+    app.use(clerkMiddleware())
     app.use(express.json())
 
 
