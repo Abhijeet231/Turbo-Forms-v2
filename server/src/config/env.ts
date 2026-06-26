@@ -6,6 +6,9 @@ const envSchema = z.object({
   PORT: z.string().describe("Port to run the server on"),
   CORS_ORIGIN: z.string().describe("Origin for CORS"),
 
+  CLERK_PUBLISHABLE_KEY: z.string(),
+  CLERK_SECRET_KEY: z.string()
+
 });
 
 function createEnv(env: NodeJS.ProcessEnv) {
