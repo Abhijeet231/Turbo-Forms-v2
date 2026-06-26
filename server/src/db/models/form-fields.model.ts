@@ -12,6 +12,7 @@ import {
     unique,
 } from "drizzle-orm/pg-core";
 import { formsTable } from "./forms.model.js";
+import type { FieldValidationInput } from "../../modules/form-field/form-field.validation.js";
 
 export const fieldTypeEnum = pgEnum("field_type", [
     "short_text",
@@ -32,18 +33,6 @@ export interface FieldOption {
     value: string;
 }
 
-// shape of validation rules stored in jsonb
-export interface FieldValidation {
-    minLength?: number;       // short_text, long_text
-    maxLength?: number;       // short_text, long_text
-    min?: number;             // number
-    max?: number;             // number
-    pattern?: string;         // regex string for text fields
-    minSelections?: number;   // multi_select
-    maxSelections?: number;   // multi_select
-    minRating?: number;       // rating
-    maxRating?: number;       // rating
-}
 
 export const formFieldsTable = pgTable(
     "form_fields",
@@ -70,7 +59,7 @@ export const formFieldsTable = pgTable(
         order: varchar("order", { length: 50 }).notNull(),
 
         options: jsonb("options").$type<FieldOption[]>().default([]).notNull(),
-        validations: jsonb("validations").$type<FieldValidation>().default({}).notNull(),
+        validations: jsonb("validations").$type<FieldValidationInput>().default({}).notNull(),
 
         created_at: timestamp("created_at").defaultNow().notNull(),
         updated_at: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),

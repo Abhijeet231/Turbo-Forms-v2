@@ -47,7 +47,6 @@ export const fieldValidationSchema = z
     .strict();
 
 //  Shared Cross-field Validation 
-
 interface CrossValidateArgs {
     type: FieldType;
     options?: { label: string; value: string; }[] | undefined;
@@ -63,7 +62,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
     if (OPTION_TYPES.has(type)) {
         if (!options || options.length === 0) {
             ctx.addIssue({
-                code: z.ZodIssueCode.custom,
+                code: "custom",
                 path: ["options"],
                 message: `options are required for field type "${type}"`,
             });
@@ -71,7 +70,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
     } else {
         if (options && options.length > 0) {
             ctx.addIssue({
-                code: z.ZodIssueCode.custom,
+                code: "custom",
                 path: ["options"],
                 message: `options are not allowed for field type "${type}"`,
             });
@@ -90,7 +89,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
 
     if (hasTextValidations && !TEXT_TYPES.has(type)) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["validations"],
             message: `minLength, maxLength, pattern are only valid for text field types`,
         });
@@ -103,7 +102,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
 
     if (hasNumberValidations && !NUMBER_TYPES.has(type)) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["validations"],
             message: `min and max are only valid for the "number" field type`,
         });
@@ -116,7 +115,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
 
     if (hasRatingValidations && !RATING_TYPES.has(type)) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["validations"],
             message: `minRating and maxRating are only valid for the "rating" field type`,
         });
@@ -129,7 +128,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
 
     if (hasSelectValidations && !SELECT_TYPES.has(type)) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["validations"],
             message: `minSelections and maxSelections are only valid for the "multi_select" field type`,
         });
@@ -144,7 +143,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
         validations.minLength >= validations.maxLength
     ) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["validations", "minLength"],
             message: "minLength must be less than maxLength",
         });
@@ -156,7 +155,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
         validations.min >= validations.max
     ) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["validations", "min"],
             message: "min must be less than max",
         });
@@ -168,7 +167,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
         validations.minRating >= validations.maxRating
     ) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["validations", "minRating"],
             message: "minRating must be less than maxRating",
         });
@@ -180,7 +179,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
         validations.minSelections >= validations.maxSelections
     ) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["validations", "minSelections"],
             message: "minSelections must be less than maxSelections",
         });
@@ -193,7 +192,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
             new RegExp(validations.pattern);
         } catch {
             ctx.addIssue({
-                code: z.ZodIssueCode.custom,
+                code: "custom",
                 path: ["validations", "pattern"],
                 message: "pattern must be a valid regular expression",
             });
@@ -204,7 +203,7 @@ function crossValidateField(data: CrossValidateArgs, ctx: z.RefinementCtx) {
 //  Create Field Schema 
 export const createFieldSchema = z
     .object({
-        
+
         type: z.enum(FIELD_TYPES, { message: "Invalid field type" }),
 
         label: z
@@ -236,25 +235,25 @@ export const updateFieldSchema = z
         validations: fieldValidationSchema.optional(),
     })
     .superRefine((data, ctx) => {
-       
+
         const v = data.validations;
         if (!v) return;
 
         if (v.minLength !== undefined && v.maxLength !== undefined && v.minLength >= v.maxLength) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["validations", "minLength"], message: "minLength must be less than maxLength" });
+            ctx.addIssue({ code: "custom", path: ["validations", "minLength"], message: "minLength must be less than maxLength" });
         }
         if (v.min !== undefined && v.max !== undefined && v.min >= v.max) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["validations", "min"], message: "min must be less than max" });
+            ctx.addIssue({ code: "custom", path: ["validations", "min"], message: "min must be less than max" });
         }
         if (v.minRating !== undefined && v.maxRating !== undefined && v.minRating >= v.maxRating) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["validations", "minRating"], message: "minRating must be less than maxRating" });
+            ctx.addIssue({ code: "custom", path: ["validations", "minRating"], message: "minRating must be less than maxRating" });
         }
         if (v.minSelections !== undefined && v.maxSelections !== undefined && v.minSelections >= v.maxSelections) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["validations", "minSelections"], message: "minSelections must be less than maxSelections" });
+            ctx.addIssue({ code: "custom", path: ["validations", "minSelections"], message: "minSelections must be less than maxSelections" });
         }
         if (v.pattern !== undefined) {
             try { new RegExp(v.pattern); } catch {
-                ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["validations", "pattern"], message: "pattern must be a valid regular expression" });
+                ctx.addIssue({ code: "custom", path: ["validations", "pattern"], message: "pattern must be a valid regular expression" });
             }
         }
     });
