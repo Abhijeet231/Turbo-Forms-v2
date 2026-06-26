@@ -30,6 +30,7 @@
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
+    "fractional-indexing": "^4.0.0",
     "pg": "^8.22.0",
     "zod": "^4.4.3"
   }
