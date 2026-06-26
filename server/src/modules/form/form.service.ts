@@ -6,7 +6,7 @@ import { type CreateFormInput, type UpdateFormInput } from "./form.validation.js
 import { getDbUserByClerkId } from "../user/user.service.js"
 
 
-// Generate Slug
+// GENERATE SLUG
 function generateSlug(title: string): string {
     const base = title
         .toLocaleLowerCase()
@@ -21,7 +21,7 @@ function generateSlug(title: string): string {
     return `${base}-${suffix}`
 }
 
-// Create Form
+// CREATE FORM
 export const createFormService = async (userId: string, data: CreateFormInput) => {
 
     // find user 
@@ -48,7 +48,7 @@ export const createFormService = async (userId: string, data: CreateFormInput) =
 
 }
 
-// Update form
+// UPDATE FORM (handles visibility as well)
 export const updateFormService = async (userId: string, formId: string, data: UpdateFormInput) => {
 
 
@@ -82,8 +82,7 @@ export const updateFormService = async (userId: string, formId: string, data: Up
 
 
 }
-
-// Get all froms for logged In creator
+// GET ALL FORMS FOR LOGGED IN CREATORS
 export const getAllFormsService = async (userId: string) => {
 
     // get the user from the DB using clerkId
@@ -109,7 +108,7 @@ export const getAllFormsService = async (userId: string) => {
 
 }
 
-// Get single form by formId
+// GET SINGLE FORM BY FORMID 
 export const getFormByIdForCreatorService = async (userId: string, formId: string) => {
     const user = await getDbUserByClerkId(userId);
 
@@ -127,7 +126,7 @@ export const getFormByIdForCreatorService = async (userId: string, formId: strin
 
 }
 
-// Delete Form
+// DELETE FORM
 export const deleteFormService = async (userId: string, formId: string) => {
 
     const user = await getDbUserByClerkId(userId)
@@ -148,7 +147,7 @@ export const deleteFormService = async (userId: string, formId: string) => {
 
 }
 
-// publish form
+// SET FORM STATUS
 export const setFormPublishStatusService = async (userId: string, formId: string, status: boolean) => {
 
     // get user from DB
@@ -167,6 +166,19 @@ export const setFormPublishStatusService = async (userId: string, formId: string
 
     if (!form[0]) throw new Error("Form not found or unauthorized")
 
+    // guard rails before publishing form
+    if (status === true && form[0].visibility !== "public") {
+        throw new Error("Form must be set to public before publishing")
+    };
+
+    if (status === true && form[0].is_published === true) {
+        throw new Error("Form is already published")
+    };
+
+    if (status === false && form[0].is_published === false) {
+        throw new Error("Form is already unpublished")
+    };
+
     //update form publish status
     const result = await db.update(formsTable)
         .set({
@@ -177,5 +189,42 @@ export const setFormPublishStatusService = async (userId: string, formId: string
 
     // return response
     return result[0]
+
+}
+
+// GET ALL PUBLIC FORM
+export const getAllPublicFormsService = async () => {
+
+    // find all forms whose ispublished status is true
+    const forms = await db.select()
+        .from(formsTable)
+        .where(and(
+            eq(formsTable.is_published, true),
+            eq(formsTable.visibility, "public")
+        ))
+        .orderBy(desc(formsTable.created_at))
+
+    return forms;
+
+    // later sort forms according to view count - higher view count - show first
+
+
+}
+
+// GET SINGLE FORM PUBLIC (with slug)
+export const getFormBySlugService = async (slug: string) => {
+
+    const result = await db.select()
+        .from(formsTable)
+        .where(and(
+            eq(formsTable.slug, slug),
+            eq(formsTable.is_published, true),
+            eq(formsTable.visibility, "public")
+        ))
+        .limit(1);
+
+    if (!result[0]) throw new Error("Form not found or unavailable")
+
+    return result[0] 
 
 }

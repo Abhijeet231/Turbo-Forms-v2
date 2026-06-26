@@ -21,7 +21,9 @@ export const updateFormSchema = z.object({
     description: z.string()
         .max(500, "Description must be unde 500 characters")
         .trim()
-        .optional()
+        .optional(),
+
+    visibility: z.enum(["public", "unlisted"]).optional(),
 })
 
 

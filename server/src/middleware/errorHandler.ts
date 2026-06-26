@@ -20,6 +20,22 @@ export const errorHandler = (
         return res.status(404).json({ error: err.message })
     }
 
+    if (err.message === "Form must be set to public before publishing") {
+        return res.status(400).json({ error: err.message });
+    }
+
+    if (err.message === "Form is already published") {
+        return res.status(400).json({ error: err.message });
+    }
+
+    if (err.message === "Form is already unpublished") {
+        return res.status(400).json({ error: err.message });
+    }
+
+    if (err.message === "Form not found or unavailable") {
+        return res.status(404).json({ error: err.message });
+    }
+
     // everything else is a server error
     res.status(500).json({ error: "Internal Server Error" })
 

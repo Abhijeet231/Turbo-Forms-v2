@@ -1,6 +1,6 @@
 import { createFormSchema, updateFormSchema } from "./form.validation.js"
 import { type NextFunction, type Request, type Response } from "express"
-import { createFormService, updateFormService, getAllFormsService, getFormByIdForCreatorService, deleteFormService, setFormPublishStatusService } from "./form.service.js"
+import { createFormService, updateFormService, getAllFormsService, getFormByIdForCreatorService, deleteFormService, setFormPublishStatusService, getAllPublicFormsService, getFormBySlugService } from "./form.service.js"
 
 
 // create form
@@ -123,3 +123,35 @@ export const unpublishForm = async (req: Request, res: Response, next: NextFunct
         next(error)
     }
 };
+
+// get all public form 
+export const getAllPublicForms = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const forms = await getAllPublicFormsService()
+        return res.json(forms)
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+// get public form (by :id)
+export const getPublicForm = async (req: Request, res: Response, next: NextFunction) => {
+
+    try {
+        const slug = req.params["slug"] as string;
+        
+        if (!slug) {
+            return res.status(400).json(
+                { error: "Slug is required" }
+            )
+        }
+
+        const form = await getFormBySlugService(slug);
+
+        res.status(200).json(form)
+    } catch (error) {
+        next(error)
+    }
+
+}
