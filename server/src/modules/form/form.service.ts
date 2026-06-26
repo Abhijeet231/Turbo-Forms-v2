@@ -126,3 +126,56 @@ export const getFormByIdForCreatorService = async (userId: string, formId: strin
     return result[0]
 
 }
+
+// Delete Form
+export const deleteFormService = async (userId: string, formId: string) => {
+
+    const user = await getDbUserByClerkId(userId)
+
+    // check ownership
+    const form = await db.select()
+        .from(formsTable)
+        .where(and(
+            eq(formsTable.id, formId),
+            eq(formsTable.user_id, user.id)
+        ))
+        .limit(1);
+
+    if (!form[0]) throw new Error("Form not found or unauthorized")
+
+    // delte form
+    await db.delete(formsTable).where(eq(formsTable.id, formId))
+
+}
+
+// publish form
+export const setFormPublishStatusService = async (userId: string, formId: string, status: boolean) => {
+
+    // get user from DB
+    const user = await getDbUserByClerkId(userId)
+
+    // check ownership
+    const form = await db.select()
+        .from(formsTable)
+        .where(
+            and(
+                eq(formsTable.id, formId),
+                eq(formsTable.user_id, user.id)
+            )
+        )
+        .limit(1)
+
+    if (!form[0]) throw new Error("Form not found or unauthorized")
+
+    //update form publish status
+    const result = await db.update(formsTable)
+        .set({
+            is_published: status
+        })
+        .where(eq(formsTable.id, formId))
+        .returning()
+
+    // return response
+    return result[0]
+
+}

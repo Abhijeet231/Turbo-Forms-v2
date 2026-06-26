@@ -3,6 +3,8 @@ import cors from "cors"
 import { env } from "./config/env.js";
 import { clerkMiddleware } from "@clerk/express"
 import userRoutes from "./modules/user/user.routes.js"
+import { errorHandler } from "./middleware/errorHandler.js";
+
 
 const createApp = () => {
 
@@ -29,7 +31,13 @@ const createApp = () => {
         })
     })
 
+    // user routes
     app.use("/api/v1/user", userRoutes)
+
+
+
+    // error handler route
+    app.use(errorHandler)
 
     return app;
 
