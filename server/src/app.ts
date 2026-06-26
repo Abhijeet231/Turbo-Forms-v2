@@ -5,6 +5,7 @@ import { clerkMiddleware } from "@clerk/express"
 import userRoutes from "./modules/user/user.routes.js"
 import { errorHandler } from "./middleware/errorHandler.js";
 import formRoutes from "./modules/form/form.route.js"
+import formFieldRoutes from "./modules/form-field/form-field.routes.js"
 
 
 const createApp = () => {
@@ -30,7 +31,8 @@ const createApp = () => {
     // form routes
     app.use("/api/v1/forms", formRoutes)
 
-
+    // form filed routes
+    app.use("/api/v1/forms/:formId/fields", formFieldRoutes)
 
     // error handler route
     app.use(errorHandler)
