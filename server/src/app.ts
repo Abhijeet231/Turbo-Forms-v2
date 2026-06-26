@@ -4,6 +4,7 @@ import { env } from "./config/env.js";
 import { clerkMiddleware } from "@clerk/express"
 import userRoutes from "./modules/user/user.routes.js"
 import { errorHandler } from "./middleware/errorHandler.js";
+import formRoutes from "./modules/form/form.route.js"
 
 
 const createApp = () => {
@@ -34,6 +35,8 @@ const createApp = () => {
     // user routes
     app.use("/api/v1/user", userRoutes)
 
+    // form routes
+    app.use("/api/v1/forms", formRoutes)
 
 
     // error handler route

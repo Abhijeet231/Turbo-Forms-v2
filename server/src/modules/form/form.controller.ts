@@ -76,7 +76,6 @@ export const getFormByIdForCreator = async (req: Request, res: Response, next: N
     }
 }
 
-
 // delete form
 export const deleteForm = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -92,7 +91,6 @@ export const deleteForm = async (req: Request, res: Response, next: NextFunction
     }
 
 }
-
 
 // publish form
 export const publishForm = async (req: Request, res: Response, next: NextFunction) => {
@@ -140,7 +138,7 @@ export const getPublicForm = async (req: Request, res: Response, next: NextFunct
 
     try {
         const slug = req.params["slug"] as string;
-        
+
         if (!slug) {
             return res.status(400).json(
                 { error: "Slug is required" }
