@@ -103,3 +103,79 @@ export const submitFormService = async (formId: string, data: SubmitFormInput): 
     return result;
 
 }
+
+// ** Get All Submissions for a form ** /api/submissions/form/:formId
+export async function getFormSubmissionsService(
+    clerkId: string,
+    formId: string
+): Promise<SelectFormSubmission[]> {
+
+    // Get user form Db
+    const dbUser = await getDbUserByClerkId(clerkId);
+
+    // check if form exists and belong to this user
+    const form = await db.select({ id: formsTable.id })
+        .from(formsTable)
+        .where(
+            and(
+                eq(formsTable.id, formId),
+                eq(formsTable.user_id, dbUser.id)
+
+            )
+        )
+        .limit(1)
+
+
+    if (form.length === 0) {
+        throw new Error("Form not found or unauthorized");
+    }
+
+
+    const submissions = await db
+        .select()
+        .from(formSubmissionsTable)
+        .where(eq(formSubmissionsTable.form_id, formId));
+
+    return submissions;
+
+}
+
+// ** Get Single Submissions **  /api/submissions/:submissionId
+export async function getSubmissionByIdService(
+    clerkId: string,
+    submissionId: string
+): Promise<SubmissionWithAnswers> {
+
+    const dbUser = await getDbUserByClerkId(clerkId);
+
+    // fetch the submission with its form to verify ownership
+    const submission = await db
+        .select({
+            submission: formSubmissionsTable,
+            form_user_id: formsTable.user_id,
+        })
+        .from(formSubmissionsTable)
+        .innerJoin(formsTable, eq(formSubmissionsTable.form_id, formsTable.id))
+        .where(eq(formSubmissionsTable.id, submissionId))
+        .limit(1);
+
+    if (submission.length === 0) {
+        throw new Error("Submission not found");
+    }
+
+    if (submission[0]!.form_user_id !== dbUser.id) {
+        throw new Error("Submission not found");
+        // intentionally same message - notto reveal the submission exists to non-owners
+    }
+
+    // fetch all answers for this submission
+    const answers = await db
+        .select()
+        .from(submissionAnswersTable)
+        .where(eq(submissionAnswersTable.submission_id, submissionId));
+
+    return {
+        ...submission[0]!.submission,
+        answers,
+    };
+}
