@@ -156,7 +156,7 @@ export function validateRatingValue(
 }
 
 // ** send each answer to the correct validator based on filed type ** 
-function validateAnswerValue(
+export function validateAnswerValue(
     value: string,
     field: SelectFormField
 ): string | null {
