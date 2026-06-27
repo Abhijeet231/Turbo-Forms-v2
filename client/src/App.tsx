@@ -1,14 +1,17 @@
-import { ThemeProvider } from "./components/theme-provider";
-import {ModeToggle} from "@/components/mode-toggle"
+import { Outlet } from "react-router-dom";
 import Navbar from "./components/general/Navbar";
+import Footer from "./components/general/Footer";
 
 const App = () => {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-    <h3 className="">App me html</h3>
-      <Navbar/>
-   
-    </ThemeProvider>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
   );
 };
 
