@@ -1,7 +1,8 @@
 theme: {
     extend: {
         fontFamily: {
-            sans: ["Geist Sans", "sans-serif"]
+            sans: ["Geist Variable", "sans-serif"]
         }
+
     }
 }

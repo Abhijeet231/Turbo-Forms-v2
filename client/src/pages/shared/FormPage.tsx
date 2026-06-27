@@ -7,3 +7,5 @@ const FormPage = () => {
 }
 
 export default FormPage
+
+// use a state to toggle between form view and success view.
