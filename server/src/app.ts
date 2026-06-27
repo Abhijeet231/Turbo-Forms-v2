@@ -6,7 +6,7 @@ import userRoutes from "./modules/user/user.routes.js"
 import { errorHandler } from "./middleware/errorHandler.js";
 import formRoutes from "./modules/form/form.route.js"
 import formFieldRoutes from "./modules/form-field/form-field.routes.js"
-
+import { formSubmitRouter, submissionsRouter } from "./modules/form-submission/form-submission.route.js";
 
 const createApp = () => {
 
@@ -31,11 +31,18 @@ const createApp = () => {
     // form routes
     app.use("/api/v1/forms", formRoutes)
 
-    // form filed routes
+    // form field routes
     app.use("/api/v1/forms/:formId/fields", formFieldRoutes)
 
-    // error handler route
+    // form submit route  (public)
+    app.use("/api/v1/forms", formSubmitRouter)
+
+    // submissions routes (protected)
+    app.use("/api/v1/submissions", submissionsRouter)
+
+    // error handler 
     app.use(errorHandler)
+
     return app;
 
 }
