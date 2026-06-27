@@ -36,6 +36,20 @@ export const errorHandler = (
         return res.status(404).json({ error: err.message });
     }
 
+    // ****** form-submission module errors ******
+    if (err.message === "Form is not accepting submissions") {
+        return res.status(400).json({ error: err.message });
+    }
+    if (err.message === "Form has no fields") {
+        return res.status(400).json({ error: err.message });
+    }
+    if (err.message === "Duplicate field_ids in answers") {
+        return res.status(400).json({ error: err.message });
+    }
+    if (err.message === "Submission not found") {
+        return res.status(404).json({ error: err.message });
+    }
+
     // everything else is a server error
     res.status(500).json({ error: "Internal Server Error" })
 
