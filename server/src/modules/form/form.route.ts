@@ -12,25 +12,24 @@ import {
 } from "./form.controller.js";
 
 import { requireAuth } from "../../middleware/auth.middleware.js";
-import route from "../user/user.routes.js";
 
 
 const router = Router();
 
 // private routes
-route.get("/", requireAuth, getAllForms)
-route.post("/", requireAuth, createForm)
+router.get("/", requireAuth, getAllForms)
+router.post("/", requireAuth, createForm)
 
 // public routes
-route.get("/public", getAllPublicForms)
-route.get("/slug/:slug", getPublicForm)
+router.get("/public", getAllPublicForms)
+router.get("/slug/:slug", getPublicForm)
 
 // private
 router.get("/:id", requireAuth, getFormByIdForCreator)
-route.patch("/:id", requireAuth, updateForm)
-route.delete("/:id", requireAuth, deleteForm)
-route.post("/:id/publish", requireAuth, publishForm)
-route.post("/:id/unpublish", requireAuth, unpublishForm)
+router.patch("/:id", requireAuth, updateForm)
+router.delete("/:id", requireAuth, deleteForm)
+router.post("/:id/publish", requireAuth, publishForm)
+router.post("/:id/unpublish", requireAuth, unpublishForm)
 
 
 export default router;
