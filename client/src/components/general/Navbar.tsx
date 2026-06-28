@@ -14,10 +14,11 @@ import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { name: "Home",    link: "/" },
+  { name: "Home", link: "/" },
   { name: "Explore", link: "/explore" },
   { name: "Pricing", link: "/pricing" },
   { name: "Contact", link: "/contact" },
+  { name: "About", link: "/about" },
 ];
 
 const AppNavbar = () => {
@@ -31,11 +32,9 @@ const AppNavbar = () => {
         <NavItems items={navItems} />
         <div className="flex items-center gap-3">
           <ModeToggle />
-
           <Show when="signed-in">
             <UserButton />
           </Show>
-
           <Show when="signed-out">
             <SignInButton mode="modal">
               <Button variant="ghost">Sign In</Button>
@@ -74,11 +73,9 @@ const AppNavbar = () => {
 
           <div className="flex flex-col gap-3 w-full pt-2">
             <ModeToggle />
-
             <Show when="signed-in">
               <UserButton />
             </Show>
-
             <Show when="signed-out">
               <SignInButton mode="modal">
                 <Button variant="ghost" className="w-full">Sign In</Button>
