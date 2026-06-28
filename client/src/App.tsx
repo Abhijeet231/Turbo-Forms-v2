@@ -1,8 +1,10 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./components/general/Navbar";
 import Footer from "./components/general/Footer";
+import { useSyncUser } from "@/hooks/useUser";
 
 const App = () => {
+  useSyncUser();
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

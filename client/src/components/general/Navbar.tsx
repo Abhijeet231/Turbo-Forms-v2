@@ -31,7 +31,7 @@ const AppNavbar = () => {
       <NavBody>
         <NavbarLogo />
         <NavItems items={navItems} />
-        <div className="relative z-[70] flex items-center gap-3">
+        <div className="relative z-70 flex items-center gap-3">
           <ModeToggle />
           <Show when="signed-in">
             <Link to="/dashboard">
