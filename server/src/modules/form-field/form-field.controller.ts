@@ -4,7 +4,7 @@ import { createFieldSchema, updateFieldSchema, reorderFieldSchema } from "./form
 import { createFieldService, getFieldsService, updateFiledService, deleteFieldService, reorderFieldService } from "./form-field.service.js"
 
 
-// create form
+// *** create form ***
 export const createField = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = createFieldSchema.safeParse(req.body);
@@ -30,7 +30,7 @@ export const createField = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-// ─── GET Fields 
+// *** GET Fields *** 
 
 export const getFields = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -45,7 +45,7 @@ export const getFields = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
-// ─── PATCH /api/forms/:formId/fields/:fieldId ──────────────────────────────────
+// *** PATCH *** /api/forms/:formId/fields/:fieldId 
 
 export const updateField = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -66,7 +66,7 @@ export const updateField = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-// ─── DELETE /api/forms/:formId/fields/:fieldId ─────────────────────────────────
+// *** DELETE *** /api/forms/:formId/fields/:fieldId 
 
 export const deleteField = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -82,7 +82,7 @@ export const deleteField = async (req: Request, res: Response, next: NextFunctio
 };
 
 
-// ─── PATCH /api/forms/:formId/fields/reorder 
+// *** PATCH *** /api/forms/:formId/fields/reorder 
 
 //  the route for this must be registered BEFORE /fields/:fieldId in your
 // router file — otherwise Express matches "reorder" as a fieldId param value.

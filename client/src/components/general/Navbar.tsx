@@ -12,6 +12,7 @@ import {
 import { ModeToggle } from "@/components/mode-toggle";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const navItems = [
   { name: "Home", link: "/" },
@@ -30,9 +31,12 @@ const AppNavbar = () => {
       <NavBody>
         <NavbarLogo />
         <NavItems items={navItems} />
-        <div className="flex items-center gap-3">
+        <div className="relative z-[70] flex items-center gap-3">
           <ModeToggle />
           <Show when="signed-in">
+            <Link to="/dashboard">
+              <Button variant="ghost">Dashboard</Button>
+            </Link>
             <UserButton />
           </Show>
           <Show when="signed-out">
@@ -73,9 +77,14 @@ const AppNavbar = () => {
 
           <div className="flex flex-col gap-3 w-full pt-2">
             <ModeToggle />
+
             <Show when="signed-in">
+              <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full">Dashboard</Button>
+              </Link>
               <UserButton />
             </Show>
+
             <Show when="signed-out">
               <SignInButton mode="modal">
                 <Button variant="ghost" className="w-full">Sign In</Button>
