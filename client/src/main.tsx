@@ -6,6 +6,7 @@ import router from "@/routes/Approuter";
 import { Toaster } from "sonner";
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, useTheme } from "@/components/theme-provider";
+import { AuthSync } from "./App";
 
 const ToasterWithTheme = () => {
   const { theme } = useTheme();
@@ -25,6 +26,7 @@ const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ClerkProvider publishableKey={clerkPubKey}>
+      <AuthSync/>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
         <ToasterWithTheme />
