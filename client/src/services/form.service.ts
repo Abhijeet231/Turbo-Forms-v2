@@ -13,7 +13,7 @@ export const updateForm = async (id: string, data: UpdateFormInput): Promise<For
 }
 
 export const deleteForm = async (id: string): Promise<void> => {
-    await api.delete(`api/v1/forms/${id}`);
+    await api.delete(`/api/v1/forms/${id}`);
 };
 
 export const publishForm = async (id: string): Promise<Form> => {
@@ -30,11 +30,11 @@ export const unpublishForm = async (id: string): Promise<void> => {
 
 // get all forms for creator
 export const getForms = async (): Promise<Form[]> => {
-    const response = await api.get("api/v1/forms");
+    const response = await api.get("/api/v1/forms");
     return response.data;
 }
 
-// get form by id for creator for preview
+// get form by id for creator for preview ( only for creator )
 export const getFormById = async (id: string): Promise<Form> => {
     const response = await api.get(`/api/v1/forms/${id}`);
     return response.data;
