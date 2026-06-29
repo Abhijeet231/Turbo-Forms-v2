@@ -13,6 +13,7 @@ export const useUnpublishForm = (id: string) => {
             return await unpublishForm(id)
         } catch (error) {
             setError("Failed to Unpublish the Form")
+            throw error;
         } finally {
             setIsLoading(false)
         }
