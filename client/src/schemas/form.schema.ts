@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+// *** Create Form Schema ***
 export const createFormSchema = z.object({
     title: z.string("Title is required")
         .min(1, "Title cannot be empty")
@@ -11,7 +12,7 @@ export const createFormSchema = z.object({
         .optional()
 })
 
-
+// *** Update Form Schema ***
 export const updateFormSchema = z.object({
     title: z.string("Title is required")
         .min(1, "Title cannot be empty")
@@ -50,3 +51,5 @@ export type Form = {
     created_at: string; // ISO 8601 string from JSON serialization
     updated_at: string;
 };
+
+
