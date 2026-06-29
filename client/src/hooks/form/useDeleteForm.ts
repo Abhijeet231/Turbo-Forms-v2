@@ -13,6 +13,7 @@ export const useDeleteForm = (id: string) => {
 
         } catch (error) {
             setError("Failed to Delete the form")
+            throw error;
         } finally {
             setIsLoading(false)
         }

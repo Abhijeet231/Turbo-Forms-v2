@@ -14,6 +14,7 @@ export const useUpdateForm = (id: string) => {
             return await updateForm(id, data)
         } catch (error) {
             setError("Failed to Update form")
+            throw error;
         } finally {
             setIsLoading(false)
         }

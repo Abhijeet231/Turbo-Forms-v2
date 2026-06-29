@@ -13,6 +13,7 @@ export const usePublishForm = (id: string) => {
 
         } catch (error) {
             setError("Failed to Publish the Form")
+            throw error;
         } finally {
             setIsLoading(false)
         }
