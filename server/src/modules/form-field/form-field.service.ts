@@ -10,74 +10,11 @@ import type {
 } from "./form-field.validation.js";
 import type { FieldSummary } from "./form-field.types.js"
 
-
-// ****************************************************************** HELPERS *******************************************************************************************
-
-// Generate field_key
-function generateFieldKey(label: string): string {
-    return label
-        .toLocaleLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s]/g, "")
-        .replace(/\s+/g, "_")
-        .replace(/_+/g, "_")
-        .slice(0, 190)
-}
+import { generateFieldKey, getUniqueFieldKey, getLastOrder, verifyFormOwnership } from "./helper.js";
 
 
-// If "name" already exists, tries "name_1", "name_2", etc.
-async function getUniqueFieldKey(formId: string, baseKey: string): Promise<string> {
-    const existing = await db
-        .select({ field_key: formFieldsTable.field_key })
-        .from(formFieldsTable)
-        .where(eq(formFieldsTable.form_id, formId));
 
-    const existingKeys = new Set(existing.map((f) => f.field_key));
-
-    if (!existingKeys.has(baseKey)) return baseKey;
-
-    let suffix = 1;
-    while (existingKeys.has(`${baseKey}_${suffix}`)) {
-        suffix++;
-    }
-    return `${baseKey}_${suffix}`;
-}
-
-// Get the order key of the last filed in the form. Return Null if no fileds yet.
-async function getLastOrder(formId: string): Promise<string | null> {
-    const result = await db
-        .select({ order: formFieldsTable.order })
-        .from(formFieldsTable)
-        .where(eq(formFieldsTable.form_id, formId))
-        .orderBy(desc(formFieldsTable))
-        .limit(1);
-
-    return result[0]?.order ?? null;
-}
-
-// Verify the form exists and belongs to this user.
-async function verifyFormOwnership(formId: string, dbUserId: string): Promise<void> {
-    const form = await db
-        .select({ id: formsTable.id })
-        .from(formsTable)
-        .where(
-            and(
-                eq(formsTable.id, formId),
-                eq(formsTable.user_id, dbUserId)
-            )
-        )
-        .limit(1);
-
-    if (form.length === 0) {
-        throw new Error("Form not found or unauthorized")
-    }
-}
-
-
-// ******************************************************************* Service Functions *******************************************************************************
-
-
-// Create filed
+// *** Create form filed ***
 export const createFieldService = async (clerkId: string, formId: string, data: CreateFieldInput): Promise<FieldSummary> => {
 
     // resolve clerk id > db user id
@@ -115,7 +52,7 @@ export const createFieldService = async (clerkId: string, formId: string, data: 
 
 }
 
-// Get all fileds 
+// *** Get all fileds for a form *** 
 export async function getFieldsService(clerkId: string, formId: string): Promise<FieldSummary[]> {
 
     const dbUser = await getDbUserByClerkId(clerkId);
@@ -130,7 +67,7 @@ export async function getFieldsService(clerkId: string, formId: string): Promise
 
 }
 
-// Update Filed
+// *** Update Filed ***
 export async function updateFiledService(clerkId: string, formId: string, fieldId: string, data: UpdateFieldInput): Promise<FieldSummary> {
 
     const dbUser = await getDbUserByClerkId(clerkId);
@@ -216,7 +153,7 @@ export async function updateFiledService(clerkId: string, formId: string, fieldI
 }
 
 
-// Delete Field
+// *** Delete Field ***
 export async function deleteFieldService(
     clerkId: string,
     formId: string,
@@ -244,7 +181,7 @@ export async function deleteFieldService(
 }
 
 
-// Reorder fileds
+// *** Reorder fileds ***
 export async function reorderFieldService(
     clerkId: string,
     formId: string,

@@ -15,7 +15,7 @@ router.use(requireAuth);
 router.patch("/reorder", reorderField);
 
 router.post("/", createField);
-router.get("/", createField);
+router.get("/", getFields);
 router.patch("/:fieldId", updateField);
 router.delete("/:fieldId", deleteField);
 

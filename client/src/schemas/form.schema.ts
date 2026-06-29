@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const createFormSchema = z.object({
     title: z.string("Title is required")
@@ -9,8 +9,7 @@ export const createFormSchema = z.object({
         .max(500, "Description must be unde 500 characters")
         .trim()
         .optional()
-
-});
+})
 
 
 export const updateFormSchema = z.object({
@@ -26,7 +25,28 @@ export const updateFormSchema = z.object({
     visibility: z.enum(["public", "unlisted"]).optional(),
 })
 
-
 export type CreateFormInput = z.infer<typeof createFormSchema>;
 
-export type UpdateFormInput = z.infer<typeof updateFormSchema>
+export type UpdateFormInput = z.infer<typeof updateFormSchema>;
+
+
+// *** Response Type ***
+export type FormVisibility = "public" | "unlisted";
+
+export type FormTheme = Record<string, unknown>;
+export type FormSettings = Record<string, unknown>;
+
+
+export type Form = {
+    id: string;
+    user_id: string;
+    title: string;
+    description: string | null;
+    slug: string;
+    visibility: FormVisibility;
+    is_published: boolean;
+    theme: FormTheme;
+    settings: FormSettings;
+    created_at: string; // ISO 8601 string from JSON serialization
+    updated_at: string;
+};
