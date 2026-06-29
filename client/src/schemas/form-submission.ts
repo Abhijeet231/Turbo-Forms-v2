@@ -2,11 +2,13 @@ import { z } from "zod";
 
 // ***  Submit Form Schema *** 
 
+// tis is schema for one single answer
 const submitAnswerSchema = z.object({
     field_id: z.uuid("field_id must be a valid UUID"),
     value: z.string().min(1, "Answer cannot be empty"),
 });
 
+// this is the whole submission payload schema
 export const submitFormSchema = z.object({
     answers: z
         .array(submitAnswerSchema)
@@ -15,14 +17,14 @@ export const submitFormSchema = z.object({
 
 // ***  Response Types (what backend sends back) *** 
 
-// matches SelectFormSubmission from backend
+// what backend returns after submit
 export type FormSubmission = {
     id: string;
     form_id: string;
     created_at: string;
 };
 
-// matches SelectSubmissionAnswer from backend
+// type of one stored answer row
 export type SubmissionAnswer = {
     id: string;
     submission_id: string;
