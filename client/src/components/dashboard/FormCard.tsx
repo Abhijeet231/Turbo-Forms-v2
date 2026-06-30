@@ -21,8 +21,8 @@ const FormCard = ({ form }: FormCardProps) => {
           <h3 className="text-base font-semibold text-white line-clamp-1">
             {form.title}
           </h3>
-          <Badge variant={form.is_active ? "default" : "secondary"}>
-            {form.is_active ? "Active" : "Draft"}
+          <Badge variant={form.is_published ? "default" : "secondary"}>
+            {form.is_published ? "Live" : "Draft"}
           </Badge>
         </CardHeader>
 

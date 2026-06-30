@@ -7,9 +7,12 @@ import { useDeleteForm } from "@/hooks/form/useDeleteForm";
 import { useGetFormsById } from "@/hooks/form/useGetFormById";
 import { useGetForms } from "@/hooks/form/useGetForms";
 import { useUpdateForm } from "@/hooks/form/useUpdateForm";
-
+import DashboardStats from "@/components/dashboard/DashboardStats";
 import CreateFormModal from "@/components/dashboard/CreateFormModal";
+import { SkeletonCard } from "@/components/skeleton/CardSkeleton";
 
+
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
@@ -22,17 +25,28 @@ const Dashboard = () => {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  console.log(forms);
+
   return (
     <div className="flex min-h-screen bg-background">
       <div className="flex-1 flex flex-col">
         <PageHeader />
 
         <main className="flex-1 p-6">
-          <h2>Create Your Customize Form Here</h2>
-          {/* FormGrid or EmptyState goes here depending on whether forms exist */}
-          <button onClick={() => setIsCreateModalOpen(true)}>
-            Create Form
-          </button>
+          <h2 className="text-xl font-semibold text-white mb-1">
+            Create Your Customized Form Here
+          </h2>
+          <p className="text-sm text-gray-400 mb-6">
+            Manage and monitor your active data collection structures.
+          </p>
+
+          <DashboardStats />
+
+          <div className="flex justify-end mb-4">
+            <Button onClick={() => setIsCreateModalOpen(true)}>
+              Create Form
+            </Button>
+          </div>
 
           <CreateFormModal
             isOpen={isCreateModalOpen}
@@ -40,7 +54,7 @@ const Dashboard = () => {
           />
 
           {isFormsLoading ? (
-            <p className="text-gray-400">Loading...</p>
+           <SkeletonCard/>
           ) : forms.length > 0 ? (
             <FormGrid forms={forms} />
           ) : (
