@@ -1,4 +1,3 @@
-// hooks/form-submission/useGetSubmissionById.ts
 import { useState, useEffect } from "react";
 import { getSubmissionById } from "@/services/form-submission.service";
 import type { SubmissionWithAnswers } from "@/schemas/form-submission";
