@@ -29,7 +29,7 @@ export const unpublishForm = async (id: string): Promise<void> => {
 // *** Querries ***
 
 // get all forms for creator
-export const getForms = async (): Promise<Form[]> => {
+export const getForms = async (): Promise<{ forms: Form[]; count: number }> => {
     const response = await api.get("/api/v1/forms");
     return response.data;
 }
