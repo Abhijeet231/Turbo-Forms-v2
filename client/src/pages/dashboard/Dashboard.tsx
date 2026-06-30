@@ -9,14 +9,18 @@ import { useGetForms } from "@/hooks/form/useGetForms";
 import { useUpdateForm } from "@/hooks/form/useUpdateForm";
 
 import CreateFormModal from "@/components/dashboard/CreateFormModal";
+
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  const {data: forms, count, isLoading: isFormsLoading, refetch} = useGetForms()
+  const {
+    data: forms,
+    count,
+    isLoading: isFormsLoading,
+    refetch,
+  } = useGetForms();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-  console.log("Data",forms[0])
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -34,6 +38,14 @@ const Dashboard = () => {
             isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
           />
+
+          {isFormsLoading ? (
+            <p className="text-gray-400">Loading...</p>
+          ) : forms.length > 0 ? (
+            <FormGrid forms={forms} />
+          ) : (
+            <EmptyState onCreateClick={() => setIsCreateModalOpen(true)} />
+          )}
         </main>
       </div>
     </div>

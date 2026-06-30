@@ -1,8 +1,18 @@
+import type { Form } from "@/schemas/form.schema";
+import FormCard from "./FormCard";
 
-const FormGrid = () => {
-  return (
-    <div>FormGrid</div>
-  )
+interface FormGridProps {
+  forms: Form[];
 }
 
-export default FormGrid
+const FormGrid = ({ forms }: FormGridProps) => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {forms.map((form) => (
+        <FormCard key={form.id} form={form} />
+      ))}
+    </div>
+  );
+};
+
+export default FormGrid;
