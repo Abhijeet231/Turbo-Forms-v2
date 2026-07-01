@@ -90,6 +90,25 @@ export async function updateFiledService(clerkId: string, formId: string, fieldI
 
     const existingField = existing[0]!;
 
+    // NEW: validate options against the stored type — same reason as validations below,
+    // updateFieldSchema doesn't receive `type` from the client so Zod can't check this
+
+    if (data.options !== undefined) {
+        const OPTION_TYPES = new Set(["single_select", "multi_select", "dropdown"]);
+        const type = existingField.type;
+
+        if (OPTION_TYPES.has(type)) {
+            if (data.options.length === 0) {
+                throw new Error(`options cannot be emptied for field type "${type}"`);
+            }
+        } else {
+            if (data.options.length > 0) {
+                throw new Error(`options are not allowed for field type "${type}"`);
+            }
+        }
+    }
+
+
     // if new validations are coming in, check them against the stored type
     // this is the check we couldn't do in the Zod schema because updateFieldSchema
     // doesn't receive `type` from the client

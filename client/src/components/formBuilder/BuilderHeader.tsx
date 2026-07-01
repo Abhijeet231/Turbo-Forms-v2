@@ -1,7 +1,7 @@
 
 const BuilderHeader = () => {
   return (
-    <div>BuilderHeader</div>
+    <div className="mb-8 bg-gray-50/20">BuilderHeader</div>
   )
 }
 

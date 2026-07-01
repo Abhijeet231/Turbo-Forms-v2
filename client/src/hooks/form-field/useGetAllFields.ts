@@ -10,6 +10,7 @@ export const useGetAllFields = (formId: string) => {
 
     const fetch = async () => {
         setIsLoading(true);
+        setError(null)
         try {
             const fields = await getAllFields(formId);
             setData(fields);
