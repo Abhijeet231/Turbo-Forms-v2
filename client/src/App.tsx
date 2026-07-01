@@ -4,39 +4,32 @@ import Footer from "./components/general/Footer";
 
 import { useAuth } from "@clerk/react";
 import { useEffect } from "react";
-import { setAuthTOken } from "./services/api";
 import { syncUser } from "./services/user.service";
+import { useRegisterAuthToken } from "./hooks/auth/useRegisterAuthToken";
 
 export const AuthSync = () => {
-  const { getToken, isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
-    const init = async () => {
-      if (isSignedIn) {
-        const token = await getToken();
-        if (!token) return;
-        setAuthTOken(token);
-        await syncUser();
-      } else {
-        setAuthTOken(null);
-      }
-    };
-
-    init();
-  }, [isSignedIn, getToken]);
+    if (isSignedIn) {
+      syncUser();
+    }
+  }, [isSignedIn]);
 
   return null;
 };
 
 const App = () => {
+  useRegisterAuthToken();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-
       <main className="flex-1">
         <Outlet />
       </main>
       <Footer />
+      <AuthSync />
     </div>
   );
 };

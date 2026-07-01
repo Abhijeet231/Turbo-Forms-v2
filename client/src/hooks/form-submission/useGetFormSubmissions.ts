@@ -1,4 +1,3 @@
-// hooks/form-submission/useGetFormSubmissions.ts
 import { useState, useEffect } from "react";
 import { getFormSubmissions } from "@/services/form-submission.service";
 import type { FormSubmission } from "@/schemas/form-submission";

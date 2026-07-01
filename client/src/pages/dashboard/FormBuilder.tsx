@@ -1,7 +1,14 @@
-// dashboard/forms/:id/edit
+import { useParams } from "react-router-dom"
+
+
 const FormBuilder = () => {
-  return (
+
+  const {id} = useParams<{id: string}>();
+
+  return (<>
     <div>FormBuilder</div>
+    <p>Your Form Id is : {id} </p>
+    </>
   )
 }
 
