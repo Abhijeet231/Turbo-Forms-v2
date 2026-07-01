@@ -9,8 +9,8 @@ import Pricing from "@/pages/Pricing";
 import About from "@/pages/About";
 
 import Dashboard from "@/pages/dashboard/Dashboard";
-import FormBuilder from "@/pages/dashboard/FormBuilder";
-import FormPreview from "@/pages/dashboard/FormPreview";
+import FormBuilder from "@/pages/form/FormBuilder";
+import FormPreview from "@/pages/form/FormPreview";
 import FormResponse from "@/pages/dashboard/FormResponse";
 
 import Analytics from "@/pages/dashboard/Analytics";

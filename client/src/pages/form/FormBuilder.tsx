@@ -1,13 +1,12 @@
 import { useParams } from "react-router-dom"
-
+import BuilderLayout from "@/components/formBuilder/BuilderLayout";
 
 const FormBuilder = () => {
-
   const {id} = useParams<{id: string}>();
 
+
   return (<>
-    <div>FormBuilder</div>
-    <p>Your Form Id is : {id} </p>
+   <BuilderLayout/>
     </>
   )
 }

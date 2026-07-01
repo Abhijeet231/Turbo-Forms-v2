@@ -17,6 +17,8 @@ export const FIELD_TYPES = [
 
 export type FieldType = (typeof FIELD_TYPES)[number];
 
+const OPTION_TYPES = new Set(["single_select", "multi_select", "dropdown"]);
+
 // *** Sub Schemas ***
 
 export const fieldOptionSchema = z.object({
@@ -46,18 +48,61 @@ export const createFieldSchema = z.object({
     is_required: z.boolean().default(false),
     options: z.array(fieldOptionSchema).optional(),
     validations: fieldValidationSchema.optional(),
-});
+})
+    .superRefine((data, ctx) => {
+        if (OPTION_TYPES.has(data.type)) {
+            if (!data.options || data.options.length === 0) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: `Options are required for field type "${data.type}"`,
+                    path: ["options"],
+                });
+            }
+        } else if (data.options && data.options.length > 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Options are not allowed for field type "${data.type}"`,
+                path: ["options"],
+            });
+        }
+    });
+
 
 // *** Update Field Schema ***
 
-export const updateFieldSchema = z.object({
-    label: z.string().min(1).max(200).trim().optional(),
-    placeholder: z.string().max(200).trim().optional().nullable(),
-    help_text: z.string().max(500).trim().optional().nullable(),
-    is_required: z.boolean().optional(),
-    options: z.array(fieldOptionSchema).optional(),
-    validations: fieldValidationSchema.optional(),
-});
+export const updateFieldSchema = z
+    .object({
+        label: z.string().min(1).max(200).trim().optional(),
+        placeholder: z.string().max(200).trim().optional().nullable(),
+        help_text: z.string().max(500).trim().optional().nullable(),
+        is_required: z.boolean().optional(),
+        options: z.array(fieldOptionSchema).optional(),
+        validations: fieldValidationSchema.optional(),
+    })
+    .superRefine((data, ctx) => {
+        const v = data.validations;
+        if (!v) return;
+
+        if (v.minLength !== undefined && v.maxLength !== undefined && v.minLength >= v.maxLength) {
+            ctx.addIssue({ code: "custom", path: ["validations", "minLength"], message: "minLength must be less than maxLength" });
+        }
+        if (v.min !== undefined && v.max !== undefined && v.min >= v.max) {
+            ctx.addIssue({ code: "custom", path: ["validations", "min"], message: "min must be less than max" });
+        }
+        if (v.minRating !== undefined && v.maxRating !== undefined && v.minRating >= v.maxRating) {
+            ctx.addIssue({ code: "custom", path: ["validations", "minRating"], message: "minRating must be less than maxRating" });
+        }
+        if (v.minSelections !== undefined && v.maxSelections !== undefined && v.minSelections >= v.maxSelections) {
+            ctx.addIssue({ code: "custom", path: ["validations", "minSelections"], message: "minSelections must be less than maxSelections" });
+        }
+        if (v.pattern !== undefined) {
+            try {
+                new RegExp(v.pattern);
+            } catch {
+                ctx.addIssue({ code: "custom", path: ["validations", "pattern"], message: "pattern must be a valid regular expression" });
+            }
+        }
+    });
 
 // *** Reorder Field Schema ***
 
