@@ -14,3 +14,14 @@ export function SkeletonCard() {
     </Card>
   )
 }
+
+
+export function SkeletonCardGrid({ count = 4 }: { count?: number }) {
+  return (
+    <div className="flex flex-wrap gap-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <SkeletonCard key={i} />
+      ))}
+    </div>
+  )
+}

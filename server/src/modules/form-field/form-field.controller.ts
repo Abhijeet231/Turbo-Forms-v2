@@ -4,7 +4,7 @@ import { createFieldSchema, updateFieldSchema, reorderFieldSchema } from "./form
 import { createFieldService, getFieldsService, updateFiledService, deleteFieldService, reorderFieldService } from "./form-field.service.js"
 
 
-// *** create form ***
+// *** create form field ***
 export const createField = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = createFieldSchema.safeParse(req.body);

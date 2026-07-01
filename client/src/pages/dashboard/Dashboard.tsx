@@ -9,7 +9,7 @@ import { useGetForms } from "@/hooks/form/useGetForms";
 import { useUpdateForm } from "@/hooks/form/useUpdateForm";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import CreateFormModal from "@/components/dashboard/CreateFormModal";
-import { SkeletonCard } from "@/components/skeleton/CardSkeleton";
+import { SkeletonCardGrid } from "@/components/skeleton/CardSkeleton";
 
 
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,7 @@ const Dashboard = () => {
           />
 
           {isFormsLoading ? (
-           <SkeletonCard/>
+           <SkeletonCardGrid/>
           ) : forms.length > 0 ? (
             <FormGrid forms={forms} />
           ) : (
