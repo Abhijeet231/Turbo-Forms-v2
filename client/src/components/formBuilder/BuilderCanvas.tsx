@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useBuilderStore } from "@/stores/useBuilderStore";
 import FieldCard from "./FieldCard";
 import { useDeleteField } from "@/hooks/form-field/useDeleteField";
@@ -18,6 +18,9 @@ const BuilderCanvas = () => {
   const { data, isLoading, error, refetch } = useGetAllFields(id!);
   const { mutate: deleteField } = useDeleteField(id!);
 
+// delete tracking stuff
+const [deletingFieldId, setDeletingFieldId] = useState<string | null>(null);
+
   useEffect(() => {
     if (data) {
       setFields(data);
@@ -25,12 +28,15 @@ const BuilderCanvas = () => {
   }, [data, setFields]);
 
   const handleDelete = async (fieldId: string) => {
+    setDeletingFieldId(fieldId)
     try {
       await deleteField(fieldId);
       removeField(fieldId); // optimistic local update after confirmed delete
       toast.success("Field deleted");
     } catch {
       toast.error("Failed to delete field");
+    }finally{
+      setDeletingFieldId(null)
     }
   };
 
@@ -73,6 +79,7 @@ const BuilderCanvas = () => {
             isSelected={field.id === selectedFieldId}
             onClick={() => selectField(field.id)}
             onDelete={() => handleDelete(field.id)}
+            isDeleting={field.id === deletingFieldId}
           />
         ))}
       </div>
