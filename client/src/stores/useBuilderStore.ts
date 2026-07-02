@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import type { FormField } from "@/schemas/form-field.schema"
+import { type UpdateFieldInput } from "@/schemas/form-field.schema"
 
 type BuilderState = {
   fields: FormField[]
@@ -7,7 +8,7 @@ type BuilderState = {
 
   setFields: (fields: FormField[]) => void
   addField: (field: FormField) => void
-  updateField: (id: string, patch: Partial<FormField>) => void
+  updateField: (id: string, patch: UpdateFieldInput) => void
   removeField: (id: string) => void
   selectField: (id: string | null) => void
 }
