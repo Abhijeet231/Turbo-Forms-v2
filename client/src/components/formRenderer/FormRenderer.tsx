@@ -1,9 +1,10 @@
-// Respondent-facing form card. Reused by the owner preview (previewMode) and,
-// later, the public /f/:slug page (pass onSubmit + submitting).
+// Respondent-facing form card. Reused by the owner preview (previewMode) and
+// the public /f/:slug page (pass onSubmit + submitting).
 
 import { useState } from "react";
 import type { Form } from "@/schemas/form.schema";
 import type { FormField } from "@/schemas/form-field.schema";
+import type { SubmitAnswerInput } from "@/schemas/form-submission";
 import FieldRenderer, { type FieldValue } from "./FieldRenderer";
 
 export type FormValues = Record<string, FieldValue>;
@@ -14,7 +15,70 @@ type FormRendererProps = {
   previewMode?: boolean;
   submitting?: boolean;
   submitLabel?: string;
-  onSubmit?: (values: FormValues) => void | Promise<void>;
+  onSubmit?: (answers: SubmitAnswerInput[]) => void | Promise<void>;
+};
+
+const isEmpty = (v: FieldValue | undefined): boolean =>
+  v == null ||
+  (typeof v === "string" && v.trim() === "") ||
+  (Array.isArray(v) && v.length === 0);
+
+// Validate one field's value. Mirrors the server rules so respondents get
+// feedback before the request. Returns an error message or null.
+const validateField = (field: FormField, value: FieldValue | undefined): string | null => {
+  if (isEmpty(value)) {
+    return field.is_required ? `${field.label} is required` : null;
+  }
+
+  const v = field.validations ?? {};
+
+  switch (field.type) {
+    case "email":
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string)) {
+        return "Enter a valid email address";
+      }
+      break;
+    case "short_text":
+    case "long_text": {
+      const s = value as string;
+      if (v.minLength != null && s.length < v.minLength)
+        return `Must be at least ${v.minLength} characters`;
+      if (v.maxLength != null && s.length > v.maxLength)
+        return `Must be at most ${v.maxLength} characters`;
+      if (v.pattern) {
+        try {
+          if (!new RegExp(v.pattern).test(s)) return "Invalid format";
+        } catch {
+          /* ignore malformed pattern */
+        }
+      }
+      break;
+    }
+    case "number": {
+      const n = Number(value);
+      if (Number.isNaN(n)) return "Must be a valid number";
+      if (v.min != null && n < v.min) return `Must be at least ${v.min}`;
+      if (v.max != null && n > v.max) return `Must be at most ${v.max}`;
+      break;
+    }
+    case "multi_select": {
+      const arr = value as string[];
+      if (v.minSelections != null && arr.length < v.minSelections)
+        return `Select at least ${v.minSelections}`;
+      if (v.maxSelections != null && arr.length > v.maxSelections)
+        return `Select at most ${v.maxSelections}`;
+      break;
+    }
+  }
+
+  return null;
+};
+
+// Serialize a field value to the string the API expects, or null to skip it.
+const serialize = (field: FormField, value: FieldValue | undefined): string | null => {
+  if (isEmpty(value)) return null;
+  if (field.type === "multi_select") return JSON.stringify(value); // '["a","b"]'
+  return String(value);
 };
 
 const FormRenderer = ({
@@ -26,15 +90,38 @@ const FormRenderer = ({
   onSubmit,
 }: FormRendererProps) => {
   const [values, setValues] = useState<FormValues>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const setValue = (fieldId: string, value: FieldValue) => {
     setValues((prev) => ({ ...prev, [fieldId]: value }));
+    // clear the error for this field as soon as the user edits it
+    setErrors((prev) => {
+      if (!prev[fieldId]) return prev;
+      const next = { ...prev };
+      delete next[fieldId];
+      return next;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (previewMode) return; // preview never submits
-    onSubmit?.(values);
+
+    const nextErrors: Record<string, string> = {};
+    for (const field of fields) {
+      const err = validateField(field, values[field.id]);
+      if (err) nextErrors[field.id] = err;
+    }
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
+    const answers: SubmitAnswerInput[] = [];
+    for (const field of fields) {
+      const value = serialize(field, values[field.id]);
+      if (value !== null) answers.push({ field_id: field.id, value });
+    }
+
+    onSubmit?.(answers);
   };
 
   return (
@@ -60,6 +147,7 @@ const FormRenderer = ({
               field={field}
               value={values[field.id]}
               onChange={(v) => setValue(field.id, v)}
+              error={errors[field.id]}
             />
           ))}
         </div>

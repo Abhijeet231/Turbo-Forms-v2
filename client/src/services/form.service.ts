@@ -1,5 +1,5 @@
 import api from "@/services/api";
-import type { CreateFormInput, UpdateFormInput, Form } from "@/schemas/form.schema";
+import type { CreateFormInput, UpdateFormInput, Form, PublicForm } from "@/schemas/form.schema";
 
 // *** Mutations *** 
 export const createForm = async (data: CreateFormInput): Promise<Form> => {
@@ -46,8 +46,8 @@ export const getPublicForms = async (): Promise<Form[]> => {
     return response.data;
 };
 
-// get single form which is publicly available
-export const getPublicFormById = async (slug: string): Promise<Form> => {
+// get single form which is publicly available (includes its ordered fields)
+export const getPublicFormById = async (slug: string): Promise<PublicForm> => {
     const response = await api.get(`/api/v1/forms/slug/${slug}`);
     return response.data;
 };

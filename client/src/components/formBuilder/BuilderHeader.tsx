@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Eye, Globe, Loader2 } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, Eye, Globe, Loader2 } from "lucide-react";
 
 import { useGetFormsById } from "@/hooks/form/useGetFormById";
 import { useUpdateForm } from "@/hooks/form/useUpdateForm";
@@ -52,6 +52,11 @@ const BuilderHeader = () => {
         setIsPublished(false);
         toast.success("Form unpublished");
       } else {
+        // the server only publishes forms whose visibility is "public",
+        // so flip visibility first for a true one-click publish
+        if (form?.visibility !== "public") {
+          await updateForm({ visibility: "public" });
+        }
         await publish();
         setIsPublished(true);
         toast.success("Form published");
@@ -62,6 +67,18 @@ const BuilderHeader = () => {
   };
 
   const isToggling = publishing || unpublishing;
+
+  const publicUrl = form?.slug ? `${window.location.origin}/f/${form.slug}` : "";
+
+  const copyLink = async () => {
+    if (!publicUrl) return;
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      toast.success("Link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
+  };
 
   return (
     <header className="flex shrink-0 items-center justify-between gap-4 border-b border-neutral-800 px-5 py-3">
@@ -114,6 +131,28 @@ const BuilderHeader = () => {
           />
           {isPublished ? "Published" : "Draft"}
         </span>
+
+        {isPublished && publicUrl && (
+          <>
+            <button
+              type="button"
+              onClick={copyLink}
+              className="flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-sm text-white/80 transition-colors hover:bg-white/5"
+            >
+              <Copy size={14} />
+              Copy link
+            </button>
+            <a
+              href={publicUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-md border border-white/10 p-2 text-white/70 transition-colors hover:bg-white/5 hover:text-white/90"
+              aria-label="Open live form in new tab"
+            >
+              <ExternalLink size={15} />
+            </a>
+          </>
+        )}
 
         <Link
           to={`/dashboard/forms/${id}/preview`}
