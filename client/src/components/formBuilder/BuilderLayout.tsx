@@ -17,7 +17,7 @@ const BuilderLayout = () => {
           <BuilderCanvas />
         </main>
 
-        <aside className="w-[330px] shrink-0 overflow-y-auto border-l border-neutral-800">
+        <aside className="w-82.5 shrink-0 overflow-y-auto border-l border-neutral-800">
           <FieldPropertiesPannel />
         </aside>
       </div>

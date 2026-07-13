@@ -1,6 +1,8 @@
 import { FIELD_TYPES } from "@/config/fieldTypes"
 import type { FormField } from "@/schemas/form-field.schema"
 import { Trash2, GripVertical, Loader2 } from "lucide-react"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 type FieldCardProps = {
   field: FormField
@@ -14,6 +16,16 @@ const FieldCard = ({ field, isSelected, isDeleting = false, onClick, onDelete }:
   const meta = FIELD_TYPES.find((ft) => ft.type === field.type)
   const Icon = meta?.icon
 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: field.id,
+    disabled: isDeleting,
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
     onDelete()
@@ -21,8 +33,12 @@ const FieldCard = ({ field, isSelected, isDeleting = false, onClick, onDelete }:
 
   return (
     <div
+      ref={setNodeRef}
+      style={style}
       onClick={isDeleting ? undefined : onClick}
       className={`group flex items-center gap-3 rounded-lg border px-4 py-3 transition-colors ${
+        isDragging ? "z-10 opacity-80 shadow-lg shadow-black/40" : ""
+      } ${
         isDeleting
           ? "cursor-not-allowed border-white/10 opacity-40"
           : "cursor-pointer " +
@@ -31,7 +47,16 @@ const FieldCard = ({ field, isSelected, isDeleting = false, onClick, onDelete }:
               : "border-white/10 hover:border-white/20 hover:bg-white/5")
       }`}
     >
-      <GripVertical size={16} className="shrink-0 text-white/20 cursor-grab" />
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        onClick={(e) => e.stopPropagation()}
+        className="shrink-0 cursor-grab touch-none text-white/20 hover:text-white/40 active:cursor-grabbing"
+        aria-label="Drag to reorder"
+      >
+        <GripVertical size={16} />
+      </button>
 
       {Icon && <Icon size={16} className="shrink-0 text-white/50" />}
 
