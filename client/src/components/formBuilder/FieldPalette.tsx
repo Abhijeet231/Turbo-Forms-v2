@@ -39,7 +39,7 @@ const FieldPalette = () => {
   }
 
   return (
-    <aside className="w-72 shrink-0 border-white/10 p-6 overflow-y-auto">
+    <div className="p-6">
       <p className="mb-3 text-xs font-medium tracking-wide text-white/50">ADD FIELD</p>
       <div className="flex flex-col gap-2">
         {FIELD_TYPES.map((ft) => {
@@ -71,7 +71,7 @@ const FieldPalette = () => {
           )
         })}
       </div>
-    </aside>
+    </div>
   )
 }
 
