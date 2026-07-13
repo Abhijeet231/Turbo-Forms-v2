@@ -1,4 +1,5 @@
 import { z } from "zod"
+import type { FormField } from "./form-field.schema"
 
 // *** Create Form Schema ***
 export const createFormSchema = z.object({
@@ -50,6 +51,11 @@ export type Form = {
     settings: FormSettings;
     created_at: string; // ISO 8601 string from JSON serialization
     updated_at: string;
+};
+
+// public form fetched by slug: the form row plus its ordered fields
+export type PublicForm = Form & {
+    fields: FormField[];
 };
 
 

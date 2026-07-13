@@ -1,7 +1,7 @@
-import { formsTable } from "../../db/schema.js";
+import { formsTable, formFieldsTable } from "../../db/schema.js";
 import { usersTable } from "../../db/schema.js";
 import { db } from "../../db/index.js";
-import { eq, count, and, desc } from "drizzle-orm";
+import { eq, count, and, desc, asc } from "drizzle-orm";
 import { type CreateFormInput, type UpdateFormInput } from "./form.validation.js"
 import { getDbUserByClerkId } from "../user/user.service.js"
 
@@ -69,11 +69,13 @@ export const updateFormService = async (userId: string, formId: string, data: Up
 
     if (!existingForm[0]) throw new Error("Form not found or unauthorized")
 
-    // update only the fields that were sent
+    // update only the fields that were sent (never null out description on a
+    // partial update, e.g. when only title or visibility changes)
     const result = await db.update(formsTable)
         .set({
-            ...data,
-            description: data.description ?? null
+            ...(data.title !== undefined && { title: data.title }),
+            ...(data.description !== undefined && { description: data.description }),
+            ...(data.visibility !== undefined && { visibility: data.visibility }),
         })
         .where(eq(formsTable.id, formId))
         .returning()
@@ -212,7 +214,8 @@ export const getAllPublicFormsService = async () => {
 
 }
 
-// GET SINGLE FORM PUBLIC (with slug)
+// GET SINGLE FORM PUBLIC (with slug) - returns the form plus its ordered fields
+// so anonymous respondents can render and fill the form in one request.
 export const getFormBySlugService = async (slug: string) => {
 
     const result = await db.select()
@@ -226,6 +229,11 @@ export const getFormBySlugService = async (slug: string) => {
 
     if (!result[0]) throw new Error("Form not found or unavailable")
 
-    return result[0] 
+    const fields = await db.select()
+        .from(formFieldsTable)
+        .where(eq(formFieldsTable.form_id, result[0].id))
+        .orderBy(asc(formFieldsTable.order))
+
+    return { ...result[0], fields }
 
 }
