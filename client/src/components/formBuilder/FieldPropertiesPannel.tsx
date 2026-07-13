@@ -192,13 +192,13 @@ const FieldPropertiesPannel = () => {
             role="switch"
             aria-checked={field.is_required}
             onClick={() => patch({ is_required: !field.is_required })}
-            className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
+            className={`inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
               field.is_required ? "bg-pink-500" : "bg-white/15"
             }`}
           >
             <span
-              className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                field.is_required ? "translate-x-4" : "translate-x-0.5"
+              className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                field.is_required ? "translate-x-4.5" : "translate-x-0.5"
               }`}
             />
           </button>
