@@ -2,6 +2,7 @@
 // The Zustand store is the source of truth — inputs read from it, changes are
 // written back optimistically, and the server PATCH is debounced (~600ms).
 
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Plus, Trash2, Settings2 } from "lucide-react";
@@ -74,6 +75,10 @@ const FieldPropertiesPannel = () => {
     (s) => s.fields.find((f) => f.id === s.selectedFieldId) ?? null
   );
   const updateField = useBuilderStore((s) => s.updateField);
+
+  // only surface the "required" error once the user leaves the label empty,
+  // never while they are actively editing (which is when the flash happened)
+  const [labelFocused, setLabelFocused] = useState(false);
 
   // Persist the *latest* store version of the field (read at flush time so we
   // never send a stale snapshot). Debounced so rapid typing = one request.
@@ -152,10 +157,12 @@ const FieldPropertiesPannel = () => {
             type="text"
             value={field.label}
             onChange={(e) => patch({ label: e.target.value })}
+            onFocus={() => setLabelFocused(true)}
+            onBlur={() => setLabelFocused(false)}
             className={inputClass}
             placeholder="Question label"
           />
-          {!field.label.trim() && (
+          {!labelFocused && !field.label.trim() && (
             <p className="mt-1 text-xs text-red-400">Label is required</p>
           )}
         </Field>
