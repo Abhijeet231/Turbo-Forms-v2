@@ -68,7 +68,7 @@ const FieldRenderer = ({ field, value, onChange, disabled, error }: FieldRendere
             value={strValue}
             onChange={(e) => onChange(e.target.value)}
             disabled={disabled}
-            className={`${controlClass} [color-scheme:dark]`}
+            className={`${controlClass} scheme-dark`}
           />
         );
 
