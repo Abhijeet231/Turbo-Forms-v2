@@ -11,6 +11,7 @@ import type { SubmitFormInput } from "./form-submission.validation.js";
 import type { SelectFormField, SelectFormSubmission } from "../../db/schema.js";
 import type { SubmissionWithAnswers } from "./form-submission.types.js";
 import { validateAnswerValue } from "./answer-validator.js"
+import { ValidationError } from "../../utils/errors.js"
 
 
 // ** SUbmit Form ** /api/forms/:formId/submit
@@ -51,7 +52,7 @@ export const submitFormService = async (formId: string, data: SubmitFormInput): 
     const validFieldIds = new Set(fields.map((f) => f.id));
     for (const answer of data.answers) {
         if (!validFieldIds.has(answer.field_id)) {
-            throw new Error(`Field "${answer.field_id}" does not belong to this form`);
+            throw new ValidationError(`Field "${answer.field_id}" does not belong to this form`);
         }
     }
 
@@ -62,7 +63,7 @@ export const submitFormService = async (formId: string, data: SubmitFormInput): 
     const answeredFieldIds = new Set(data.answers.map((a) => a.field_id));
     for (const field of fields) {
         if (field.is_required && !answeredFieldIds.has(field.id)) {
-            throw new Error(`"${field.label}" is required`);
+            throw new ValidationError(`"${field.label}" is required`);
         }
     }
 
@@ -75,7 +76,7 @@ export const submitFormService = async (formId: string, data: SubmitFormInput): 
     }
 
     if (validationErrors.length > 0) {
-        throw new Error(validationErrors.join(", "));
+        throw new ValidationError(validationErrors.join(", "));
     }
 
 

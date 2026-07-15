@@ -1,4 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
+import { AppError } from "../utils/errors.js";
 
 export const errorHandler = (
     err: Error,
@@ -10,6 +11,10 @@ export const errorHandler = (
     console.error(`[${req.method}] ${req.path} -- ${err.message}`);
     console.error(err.stack)
 
+    // typed errors carry their own status + client-safe message
+    if (err instanceof AppError) {
+        return res.status(err.statusCode).json({ error: err.message });
+    }
 
     // handle known errors
     if (err.message === "User not found") {
