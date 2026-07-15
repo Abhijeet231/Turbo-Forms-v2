@@ -11,46 +11,8 @@ import { useGetSubmissionById } from "@/hooks/form-submission/useGetSubmissionBy
 import { useGetAllFields } from "@/hooks/form-field/useGetAllFields";
 
 import type { FormField } from "@/schemas/form-field.schema";
+import { formatAnswer, formatDate } from "@/lib/submissionFormat";
 import { Badge } from "@/components/ui/badge";
-
-// Turn a stored answer (field_id + raw string value) into something readable,
-// using the field definition (options labels, boolean, rating, multi-select).
-const formatAnswer = (field: FormField | undefined, value: string): string => {
-  if (!field) return value;
-
-  switch (field.type) {
-    case "boolean":
-      return value === "true" ? "Yes" : "No";
-
-    case "single_select":
-    case "dropdown":
-      return field.options.find((o) => o.value === value)?.label ?? value;
-
-    case "multi_select":
-      try {
-        const arr = JSON.parse(value) as string[];
-        return arr
-          .map((v) => field.options.find((o) => o.value === v)?.label ?? v)
-          .join(", ");
-      } catch {
-        return value;
-      }
-
-    case "rating": {
-      const max = field.validations?.maxRating ?? 5;
-      return `${value} / ${max}`;
-    }
-
-    default:
-      return value;
-  }
-};
-
-const formatDate = (iso: string): string =>
-  new Date(iso).toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
 
 // ── Detail panel ────────────────────────────────────────────────────────────
 // Mounted only when a submission is selected, so the hook fetches on demand.
