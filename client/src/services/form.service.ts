@@ -21,8 +21,8 @@ export const publishForm = async (id: string): Promise<Form> => {
     return response.data;
 }
 
-export const unpublishForm = async (id: string): Promise<void> => {
-    const response = await api.patch(`/api/v1/forms/${id}/unpublish`);
+export const unpublishForm = async (id: string): Promise<Form> => {
+    const response = await api.post(`/api/v1/forms/${id}/unpublish`);
     return response.data;
 }
 

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Copy, ExternalLink, Eye, Globe, Loader2 } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, Eye, Globe, Inbox, Loader2 } from "lucide-react";
 
 import { useGetFormsById } from "@/hooks/form/useGetFormById";
 import { useUpdateForm } from "@/hooks/form/useUpdateForm";
@@ -14,7 +14,7 @@ const BuilderHeader = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: form, isLoading } = useGetFormsById(id!);
+  const { data: form, isLoading, refetch } = useGetFormsById(id!);
   const { mutate: updateForm } = useUpdateForm(id!);
   const { mutate: publish, isLoading: publishing } = usePublishForm(id!);
   const { mutate: unpublish, isLoading: unpublishing } = useUnpublishForm(id!);
@@ -22,14 +22,17 @@ const BuilderHeader = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isPublished, setIsPublished] = useState(false);
+  const [syncedFormId, setSyncedFormId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (form) {
-      setTitle(form.title);
-      setDescription(form.description ?? "");
-      setIsPublished(form.is_published);
-    }
-  }, [form]);
+  // seed the editable state when a (new) form loads. Setting state during
+  // render instead of in an effect is React's recommended way to adjust state
+  // from changing data, and avoids the setState-in-effect cascading-render lint.
+  if (form && form.id !== syncedFormId) {
+    setSyncedFormId(form.id);
+    setTitle(form.title);
+    setDescription(form.description ?? "");
+    setIsPublished(form.is_published);
+  }
 
   const debouncedSave = useDebouncedCallback((patch: UpdateFormInput) => {
     updateForm(patch).catch(() => toast.error("Failed to save form"));
@@ -61,6 +64,9 @@ const BuilderHeader = () => {
         setIsPublished(true);
         toast.success("Form published");
       }
+      // pull the fresh row so form.visibility / is_published stay accurate
+      // for subsequent toggles instead of holding stale load-time values
+      await refetch();
     } catch {
       toast.error(isPublished ? "Failed to unpublish" : "Failed to publish");
     }
@@ -160,6 +166,14 @@ const BuilderHeader = () => {
         >
           <Eye size={15} />
           Preview
+        </Link>
+
+        <Link
+          to={`/dashboard/forms/${id}/responses`}
+          className="flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-sm text-white/80 transition-colors hover:bg-white/5"
+        >
+          <Inbox size={15} />
+          Responses
         </Link>
 
         <button

@@ -1,5 +1,6 @@
 import { publishForm } from "@/services/form.service";
 import { useState } from "react";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const usePublishForm = (id: string) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +13,7 @@ export const usePublishForm = (id: string) => {
             return await publishForm(id);
 
         } catch (error) {
-            setError("Failed to Publish the Form")
+            setError(getApiErrorMessage(error, "Failed to Publish the Form"))
             throw error;
         } finally {
             setIsLoading(false)

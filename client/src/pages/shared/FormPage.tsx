@@ -9,6 +9,7 @@ import { useGetPublicForm } from "@/hooks/form/useGetPublicForm";
 import { useSubmitForm } from "@/hooks/form-submission/useSubmitForm";
 import FormRenderer from "@/components/formRenderer/FormRenderer";
 import type { SubmitAnswerInput } from "@/schemas/form-submission";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 const FormPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -26,8 +27,10 @@ const FormPage = () => {
     try {
       await submit({ answers });
       setSubmitted(true);
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      // surface the server's validation message (e.g. "Name" is required)
+      // instead of a generic error, falling back for network failures
+      toast.error(getApiErrorMessage(err, "Something went wrong. Please try again."));
     }
   };
 

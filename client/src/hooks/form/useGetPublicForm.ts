@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getPublicFormById } from "@/services/form.service";
 import type { PublicForm } from "@/schemas/form.schema";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 // Fetch a published, public form (with its fields) by slug. No auth required.
 export const useGetPublicForm = (slug: string) => {
@@ -14,8 +15,8 @@ export const useGetPublicForm = (slug: string) => {
         try {
             const form = await getPublicFormById(slug);
             setData(form);
-        } catch {
-            setError("This form is not available");
+        } catch (error) {
+            setError(getApiErrorMessage(error, "This form is not available"));
         } finally {
             setIsLoading(false);
         }

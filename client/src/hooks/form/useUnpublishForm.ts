@@ -1,5 +1,6 @@
 import { unpublishForm } from "@/services/form.service";
 import { useState } from "react";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const useUnpublishForm = (id: string) => {
     const [isLoading, setIsLoading] = useState(false)
@@ -12,7 +13,7 @@ export const useUnpublishForm = (id: string) => {
         try {
             return await unpublishForm(id)
         } catch (error) {
-            setError("Failed to Unpublish the Form")
+            setError(getApiErrorMessage(error, "Failed to Unpublish the Form"))
             throw error;
         } finally {
             setIsLoading(false)
