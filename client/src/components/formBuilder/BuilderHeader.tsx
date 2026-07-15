@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Copy, ExternalLink, Eye, Globe, Loader2 } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, Eye, Globe, Inbox, Loader2 } from "lucide-react";
 
 import { useGetFormsById } from "@/hooks/form/useGetFormById";
 import { useUpdateForm } from "@/hooks/form/useUpdateForm";
@@ -166,6 +166,14 @@ const BuilderHeader = () => {
         >
           <Eye size={15} />
           Preview
+        </Link>
+
+        <Link
+          to={`/dashboard/forms/${id}/responses`}
+          className="flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-sm text-white/80 transition-colors hover:bg-white/5"
+        >
+          <Inbox size={15} />
+          Responses
         </Link>
 
         <button
