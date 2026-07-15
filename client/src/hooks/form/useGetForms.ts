@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getForms } from "@/services/form.service";
 import type { Form } from "@/schemas/form.schema";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 
 export const useGetForms = () => {
@@ -16,7 +17,7 @@ export const useGetForms = () => {
             setData(response.forms)
             setCount(response.count)
         } catch (error) {
-            setError("Failed to fetch forms")
+            setError(getApiErrorMessage(error, "Failed to fetch forms"))
         } finally {
             setIsLoading(false)
         }

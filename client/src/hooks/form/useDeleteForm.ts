@@ -1,5 +1,6 @@
 import { deleteForm } from "@/services/form.service";
 import { useState } from "react";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const useDeleteForm = (id: string) => {
     const [isLoading, setIsLoading] = useState(false) // for mutation initial state should be false
@@ -12,7 +13,7 @@ export const useDeleteForm = (id: string) => {
             await deleteForm(id)
 
         } catch (error) {
-            setError("Failed to Delete the form")
+            setError(getApiErrorMessage(error, "Failed to Delete the form"))
             throw error;
         } finally {
             setIsLoading(false)

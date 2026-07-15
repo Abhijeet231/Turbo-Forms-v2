@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getFormSubmissions } from "@/services/form-submission.service";
 import type { FormSubmission } from "@/schemas/form-submission";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const useGetFormSubmissions = (formId: string) => {
     const [data, setData] = useState<FormSubmission[]>([]);
@@ -12,8 +13,8 @@ export const useGetFormSubmissions = (formId: string) => {
         try {
             const submissions = await getFormSubmissions(formId);
             setData(submissions);
-        } catch {
-            setError("Failed to fetch submissions");
+        } catch (error) {
+            setError(getApiErrorMessage(error, "Failed to fetch submissions"));
         } finally {
             setIsLoading(false);
         }

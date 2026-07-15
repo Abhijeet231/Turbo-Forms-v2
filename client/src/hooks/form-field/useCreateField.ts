@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {createField} from "@/services/form-field.service"
 import type { CreateFieldInput } from "@/schemas/form-field.schema";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const useCreateField = (formId:string) => {
     const [isLoading, setIsLoading] = useState(false)
@@ -13,7 +14,7 @@ export const useCreateField = (formId:string) => {
         try {
             return await createField(formId, data)
         } catch (error) {
-            setError("Failed to Create a filed")
+            setError(getApiErrorMessage(error, "Failed to Create a filed"))
             throw error;
         } finally {
             setIsLoading(false)

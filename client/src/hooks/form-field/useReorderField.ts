@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ReorderFieldInput } from "@/schemas/form-field.schema";
 import { reorderField } from '@/services/form-field.service'
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const useReorderField = (formId: string) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +13,7 @@ export const useReorderField = (formId: string) => {
         try {
             return await reorderField(formId, fieldId, data);
         } catch (error) {
-            setError("Failed to reorder field");
+            setError(getApiErrorMessage(error, "Failed to reorder field"));
             throw error;
         } finally {
             setIsLoading(false);

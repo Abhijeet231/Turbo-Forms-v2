@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { UpdateFieldInput } from "@/schemas/form-field.schema";
 import { updateField } from "@/services/form-field.service";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const useUpdateField = (formId: string) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +13,7 @@ export const useUpdateField = (formId: string) => {
         try {
             return await updateField(formId, fieldId, data);
         } catch (error) {
-            setError("Failed to update field");
+            setError(getApiErrorMessage(error, "Failed to update field"));
             throw error;
         } finally {
             setIsLoading(false);

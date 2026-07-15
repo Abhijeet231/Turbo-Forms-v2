@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createForm } from "@/services/form.service";
 import type { CreateFormInput } from "@/schemas/form.schema";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const useCreateForm = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +15,7 @@ export const useCreateForm = () => {
         try {
             return await createForm(data);
         } catch (error) {
-            setError("Failed to Create Form")
+            setError(getApiErrorMessage(error, "Failed to Create Form"))
             throw error
         } finally {
             setIsLoading(false)

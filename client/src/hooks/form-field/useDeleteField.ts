@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { deleteField } from "@/services/form-field.service"
+import { getApiErrorMessage } from "@/lib/apiError";
 
 export const useDeleteField = (formId: string) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +12,7 @@ export const useDeleteField = (formId: string) => {
         try {
             await deleteField(formId, fieldId);
         } catch (error) {
-            setError("Failed to delete field");
+            setError(getApiErrorMessage(error, "Failed to delete field"));
             throw error;
         } finally {
             setIsLoading(false);

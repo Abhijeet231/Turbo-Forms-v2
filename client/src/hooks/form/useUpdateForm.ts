@@ -1,6 +1,7 @@
 import { updateForm } from "@/services/form.service"
 import { useState } from "react"
 import type { UpdateFormInput } from "@/schemas/form.schema";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 
 export const useUpdateForm = (id: string) => {
@@ -13,7 +14,7 @@ export const useUpdateForm = (id: string) => {
         try {
             return await updateForm(id, data)
         } catch (error) {
-            setError("Failed to Update form")
+            setError(getApiErrorMessage(error, "Failed to Update form"))
             throw error;
         } finally {
             setIsLoading(false)

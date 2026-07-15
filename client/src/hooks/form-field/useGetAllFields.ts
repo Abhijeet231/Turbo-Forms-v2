@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { FormField } from "@/schemas/form-field.schema";
 import { getAllFields } from "@/services/form-field.service";
+import { getApiErrorMessage } from "@/lib/apiError";
 
 
 export const useGetAllFields = (formId: string) => {
@@ -14,8 +15,8 @@ export const useGetAllFields = (formId: string) => {
         try {
             const fields = await getAllFields(formId);
             setData(fields);
-        } catch {
-            setError("Failed to fetch fields");
+        } catch (error) {
+            setError(getApiErrorMessage(error, "Failed to fetch fields"));
         } finally {
             setIsLoading(false);
         }
