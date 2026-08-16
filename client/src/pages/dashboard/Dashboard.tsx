@@ -40,7 +40,7 @@ const Dashboard = () => {
             Manage and monitor your active data collection structures.
           </p>
 
-          <DashboardStats />
+          <DashboardStats forms={forms} isLoading={isFormsLoading} />
 
           <div className="flex justify-end mb-4">
             <Button onClick={() => setIsCreateModalOpen(true)}>

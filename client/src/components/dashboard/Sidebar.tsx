@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom"
 import { FileText, BarChart2, Inbox, Settings, Zap, HelpCircle, LogOut } from "lucide-react"
+import { SignOutButton } from "@clerk/react"
 
 const navItems = [
   { label: "Forms", to: "/dashboard", icon: FileText },
@@ -45,10 +46,12 @@ const Sidebar = () => {
           <HelpCircle className="w-4 h-4" />
           Help
         </button>
-        <button className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-background/50">
-          <LogOut className="w-4 h-4" />
-          Sign out
-        </button>
+        <SignOutButton redirectUrl="/">
+          <button className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-background/50">
+            <LogOut className="w-4 h-4" />
+            Sign out
+          </button>
+        </SignOutButton>
       </div>
     </aside>
   )
