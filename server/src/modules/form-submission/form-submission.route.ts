@@ -1,16 +1,17 @@
 import { Router } from "express";
 import { requireAuth } from "../../middleware/auth.middleware.js";
+import { submitLimiter } from "../../middleware/rateLimiter.middleware.js";
 import {
     submitForm,
     getFormSubmissions,
     getSubmissionById,
 } from "./form-submission.controller.js";
 
-//  /api/forms/:formId/submit 
+//  /api/forms/:formId/submit
 export const formSubmitRouter = Router({ mergeParams: true });
 
-// public - add rate limiting later
-formSubmitRouter.post("/:formId/submit", submitForm);
+// public
+formSubmitRouter.post("/:formId/submit", submitLimiter, submitForm);
 
 //  /api/submissions 
 

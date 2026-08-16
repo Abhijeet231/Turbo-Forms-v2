@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import formRoutes from "./modules/form/form.route.js"
 import formFieldRoutes from "./modules/form-field/form-field.routes.js"
 import { formSubmitRouter, submissionsRouter } from "./modules/form-submission/form-submission.route.js";
+import { apiLimiter } from "./middleware/rateLimiter.middleware.js";
 
 const createApp = () => {
 
@@ -22,6 +23,7 @@ const createApp = () => {
     ))
     app.use(clerkMiddleware())
     app.use(express.json())
+    app.use(apiLimiter)
 
 
 

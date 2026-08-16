@@ -55,9 +55,6 @@ the code directly (not on any prior docs). Last verified: 2026-08-16.
   `count`/`refetch` destructured but unused) and a leftover
   `console.log(forms)`. Not touched — out of scope for the stats/stub work
   done 2026-08-16, but easy cleanup whenever someone's next in that file.
-- **Rate limiting** — `server/src/middleware/rateLimiter.middleware.ts` is
-  an empty file with a TODO comment. The public submit endpoint has no
-  protection against abuse.
 - **Form `settings` jsonb** (submission limit, expiry) — column exists on
   `forms`, nothing reads or enforces it.
 - **`field_key`** on `form_fields` — generated and stored, but not consumed
@@ -68,6 +65,18 @@ the code directly (not on any prior docs). Last verified: 2026-08-16.
 
 ## Recently fixed
 
+- **Rate limiting (fixed 2026-08-16).** `rateLimiter.middleware.ts` was an
+  empty stub; the public submit endpoint had no abuse protection. Added
+  `express-rate-limit` with three tiers: `apiLimiter` (300 req/15min per IP,
+  mounted globally in `app.ts` as a baseline for every route, auth or not),
+  `submitLimiter` (10 req/15min per IP, on `POST /forms/:formId/submit` —
+  the highest-value target since it's unauthenticated and writes to the DB),
+  and `publicReadLimiter` (100 req/15min per IP, on `GET /forms/public` and
+  `GET /forms/slug/:slug`). All three return `429` with the app's standard
+  `{error: message}` shape. Verified via curl: the submit endpoint's 11th
+  request in a window correctly returns 429 while the first 10 pass through
+  to normal validation; general and public-read endpoints unaffected at
+  normal request volumes.
 - **Field reorder 404 (fixed 2026-08-16).** The client called
   `PATCH /api/v1/forms/:formId/fields/:fieldId/reorder`, but the server
   route (`server/src/modules/form-field/form-field.routes.ts`) only

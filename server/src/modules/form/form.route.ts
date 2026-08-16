@@ -12,6 +12,7 @@ import {
 } from "./form.controller.js";
 
 import { requireAuth } from "../../middleware/auth.middleware.js";
+import { publicReadLimiter } from "../../middleware/rateLimiter.middleware.js";
 
 
 const router = Router();
@@ -21,8 +22,8 @@ router.get("/", requireAuth, getAllForms)
 router.post("/", requireAuth, createForm)
 
 // public routes
-router.get("/public", getAllPublicForms)
-router.get("/slug/:slug", getPublicForm)
+router.get("/public", publicReadLimiter, getAllPublicForms)
+router.get("/slug/:slug", publicReadLimiter, getPublicForm)
 
 // private
 router.get("/:id", requireAuth, getFormByIdForCreator)
