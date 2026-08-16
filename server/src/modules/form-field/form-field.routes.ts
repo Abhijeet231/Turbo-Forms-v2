@@ -12,7 +12,7 @@ const router = Router({mergeParams: true});
 
 router.use(requireAuth);
 
-router.patch("/reorder", reorderField);
+router.patch("/:fieldId/reorder", reorderField);
 
 router.post("/", createField);
 router.get("/", getFields);
