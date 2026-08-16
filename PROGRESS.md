@@ -1,7 +1,7 @@
 # PROGRESS.md
 
 Snapshot of what's actually built vs. stubbed vs. missing, based on reading
-the code directly (not on any prior docs). Last verified: 2026-08-16.
+the code directly (not on any prior docs). Last verified: 2026-08-17.
 
 ## Built and working
 
@@ -84,30 +84,33 @@ the code directly (not on any prior docs). Last verified: 2026-08-16.
   segment, so `req.params.fieldId` was `undefined` even when hit directly.
   Fixed by changing the route to `router.patch("/:fieldId/reorder",
   reorderField)`, matching what the controller already expected (and what
-  its own comment described). Verified via curl: previously 404, now
-  correctly reaches `requireAuth` (401 without a token). Not yet re-tested
-  through the actual signed-in drag-and-drop UI — do that before
-  considering it fully closed.
+  its own comment described). Verified via curl (previously 404, now
+  correctly reaches `requireAuth`) and, on 2026-08-17, through the actual
+  signed-in drag-and-drop UI: dragged a field to a new position, reloaded
+  the page, new order persisted server-side. Fully closed.
 - **Sidebar "Sign out" button (fixed 2026-08-16).** Had no `onClick`.
   Wrapped it in Clerk's `<SignOutButton redirectUrl="/">`
   (`client/src/components/dashboard/Sidebar.tsx`), consistent with how the
   rest of the app delegates all auth UI to Clerk components (see
-  `Navbar.tsx`). Not yet re-verified in a signed-in browser session — do
-  that before considering it fully closed.
+  `Navbar.tsx`). Verified 2026-08-17 in a signed-in browser session:
+  redirects to the landing page and clears the session. Fully closed.
 - **Analytics page (fixed 2026-08-16).** Was a literal `<div>Analytics</div>`.
   Now a real page: KPI row (total forms, published forms, total
   submissions) + a horizontal bar chart of submissions per form. Counts come
   from `useSubmissionCounts` (see the `DashboardStats` entry below) — an
   N+1 pattern (one request per form); fine at current scale, revisit if a
-  form owner ever has dozens of forms. Typechecks and lints clean; not yet
-  visually verified in a signed-in browser session.
+  form owner ever has dozens of forms. Verified 2026-08-17 in a signed-in
+  browser session: KPIs and bar chart matched real DB data (3 forms, 2
+  published, 1 submission on "school feedback"). Fully closed.
 - **Settings page (fixed 2026-08-16).** Was a literal `<div>Setting</div>`.
   Now: a theme toggle row (the one real app-level preference that already
   existed via `ThemeProvider`) plus Clerk's `<UserProfile routing="hash" />`
   for account management (name, email, password, sessions) — there's no
   backend endpoint for user settings (`PATCH /user/me` doesn't exist), so
-  this delegates to Clerk the same way the rest of the app does. Typechecks
-  and lints clean; not yet visually verified in a signed-in browser session.
+  this delegates to Clerk the same way the rest of the app does. Verified
+  2026-08-17 in a signed-in browser session: theme toggle re-themes the
+  whole dashboard including the embedded Clerk component instantly, and
+  `UserProfile` renders real account data. Fully closed.
 - **`DashboardStats` hardcoded data (fixed 2026-08-16).** Was rendering
   `dummyStats` (12 forms, 3482 submissions, 8 published) with a comment
   saying as much. Extracted the counting logic both this component and
@@ -115,10 +118,12 @@ the code directly (not on any prior docs). Last verified: 2026-08-16.
   (fans out one `getFormSubmissions` call per form, since there's no
   aggregate endpoint) and wired both to it. `DashboardStats` now takes
   `forms`/`isLoading` as props from `Dashboard.tsx` (which already fetches
-  forms) instead of fetching its own copy. Typechecks clean; the one lint
-  finding (`react-hooks/set-state-in-effect` on the new hook's fetch effect)
-  is the same pattern every existing fetch hook in this codebase already
-  trips — see the architectural-gaps note below, not something new.
+  forms) instead of fetching its own copy. The one lint finding
+  (`react-hooks/set-state-in-effect` on the new hook's fetch effect) is the
+  same pattern every existing fetch hook in this codebase already trips —
+  see the architectural-gaps note below, not something new. Verified
+  2026-08-17 in a signed-in browser session: real counts shown (3/1/2),
+  matching the form cards below. Fully closed.
 
 ## Architectural gaps worth knowing about (not bugs, but incomplete)
 

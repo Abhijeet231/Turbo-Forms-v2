@@ -63,8 +63,12 @@ name is not related to Turborepo):
 - No file uploads (no Multer), no Cloudinary, no image/asset handling
   anywhere in the codebase
 - No Scalar/Swagger/OpenAPI setup exists in code
-- Rate limiting is an **empty stub** (`middleware/rateLimiter.middleware.ts`
-  contains only a comment; nothing is wired up)
+- Rate limiting via `express-rate-limit`, wired in
+  `middleware/rateLimiter.middleware.ts`: a global baseline (`apiLimiter`,
+  300/15min, mounted in `app.ts` on every route), a strict limit on public
+  submission (`submitLimiter`, 10/15min, on `POST /forms/:formId/submit`),
+  and a moderate limit on public reads (`publicReadLimiter`, 100/15min, on
+  `GET /forms/public` and `GET /forms/slug/:slug`)
 - No test runner, no ESLint/Prettier config in `server/`
 
 ## Repo structure
