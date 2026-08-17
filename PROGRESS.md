@@ -65,6 +65,26 @@ the code directly (not on any prior docs). Last verified: 2026-08-17.
 
 ## Recently fixed
 
+- **`CORS_ORIGIN` mismatch broke every dashboard API call (fixed
+  2026-08-17, local env only).** `server/.env`'s `CORS_ORIGIN` was set to
+  `http://localhost:5174`, but Vite has no configured port in
+  `client/vite.config.ts` and defaults to (and was actually running on)
+  `5173`. Every dashboard fetch was silently CORS-blocked: the server
+  returned real 200/401 responses, but the browser withheld them from JS
+  because `Access-Control-Allow-Origin` didn't match the page's origin, so
+  axios surfaced `Network Error`. Hooks that catch fetch errors degraded
+  gracefully to empty state (dashboard quietly showed "0 forms, 0
+  submissions, No forms yet" instead of erroring), which is why this went
+  unnoticed — only the uncaught `syncUser()` call in `AuthSync`
+  (`client/src/App.tsx`) logged anything, and only to the console. Fixed by
+  changing `CORS_ORIGIN` to `http://localhost:5173` in `server/.env` (not
+  committed — gitignored, local-only). Verified 2026-08-17 in a signed-in
+  browser session: console errors gone, dashboard now shows real data (3
+  forms, 1 submission, 2 published) instead of the empty-state facade.
+  Anyone else pulling this repo needs to set their own
+  `server/.env`'s `CORS_ORIGIN` to match whatever port their Vite dev
+  server actually lands on — there's no `.env.example` to catch this
+  (see the architectural-gaps note below).
 - **Rate limiting (fixed 2026-08-16).** `rateLimiter.middleware.ts` was an
   empty stub; the public submit endpoint had no abuse protection. Added
   `express-rate-limit` with three tiers: `apiLimiter` (300 req/15min per IP,
