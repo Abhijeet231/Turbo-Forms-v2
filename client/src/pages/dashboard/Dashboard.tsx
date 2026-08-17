@@ -1,31 +1,19 @@
-import Sidebar from "@/components/dashboard/Sidebar";
 import EmptyState from "@/components/dashboard/EmptyState";
 import FormGrid from "@/components/dashboard/FormGrid";
 import PageHeader from "@/components/dashboard/PageHeader";
 
-import { useDeleteForm } from "@/hooks/form/useDeleteForm";
-import { useGetFormsById } from "@/hooks/form/useGetFormById";
 import { useGetForms } from "@/hooks/form/useGetForms";
-import { useUpdateForm } from "@/hooks/form/useUpdateForm";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import CreateFormModal from "@/components/dashboard/CreateFormModal";
 import { SkeletonCardGrid } from "@/components/skeleton/CardSkeleton";
 
-
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Dashboard = () => {
-  const {
-    data: forms,
-    count,
-    isLoading: isFormsLoading,
-    refetch,
-  } = useGetForms();
+  const { data: forms, isLoading: isFormsLoading } = useGetForms();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-  console.log(forms);
 
   return (
     <div className="flex min-h-screen bg-background">

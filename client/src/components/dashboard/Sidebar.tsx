@@ -1,6 +1,8 @@
+import { useState } from "react"
 import { NavLink } from "react-router-dom"
 import { FileText, BarChart2, Inbox, Settings, Zap, HelpCircle, LogOut } from "lucide-react"
 import { SignOutButton } from "@clerk/react"
+import HelpModal from "./HelpModal"
 
 const navItems = [
   { label: "Forms", to: "/dashboard", icon: FileText },
@@ -10,6 +12,8 @@ const navItems = [
 ]
 
 const Sidebar = () => {
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
+
   return (
     <aside className="w-56 shrink-0 h-screen border-r bg-muted/30 flex flex-col justify-between p-4">
       <div>
@@ -42,7 +46,11 @@ const Sidebar = () => {
       </div>
 
       <div className="flex flex-col gap-1 border-t pt-3">
-        <button className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-background/50">
+        <button
+          type="button"
+          onClick={() => setIsHelpOpen(true)}
+          className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-background/50"
+        >
           <HelpCircle className="w-4 h-4" />
           Help
         </button>
@@ -53,6 +61,8 @@ const Sidebar = () => {
           </button>
         </SignOutButton>
       </div>
+
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </aside>
   )
 }

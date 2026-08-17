@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { UserButton } from "@clerk/react";
-import { Bell, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 const PageHeader = () => {
   return (
@@ -15,10 +15,6 @@ const PageHeader = () => {
       </Link>
 
       <div className="flex items-center gap-4">
-        <button className="text-gray-400 hover:text-white transition-colors mr-4">
-          <Bell className="w-5 h-5" />
-        </button>
-
         <UserButton />
       </div>
     </div>
